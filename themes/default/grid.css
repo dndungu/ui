@@ -1,0 +1,147 @@
+.row {
+	width: 100%;
+	display: block;
+}
+
+[class*=" grid"],
+[class^="grid"] {
+	vertical-align: top;
+	display: inline-block;
+	margin-right: 1%;
+	margin-left: 1%;
+	min-height: 8px;
+}
+
+[class*=" grid"]:first-child,
+[class^="grid"]:first-child {
+	margin-left: 0;
+}
+
+[class*=" grid"]:last-child,
+[class^="grid"]:last-child {
+	margin-right: 0;
+}
+
+.grid1 {
+	width: 4.25%;
+}
+
+.offset1, .offset1:first-child {
+	margin-left: 7.25%;
+}
+
+.grid2 {
+	width: 10.5%;
+}
+
+.offset2, .offset2:first-child {
+	width: 13.5%;
+}
+
+.grid3 {
+	width: 16.75%;
+}
+
+.offset3, .offset:first-child {
+	width: 19.75%;
+}
+
+.grid4 {
+	width: 23%;
+}
+
+.offset4, .offset4:first-child {
+	margin-left: 26%;
+}
+
+.grid5 {
+	width: 29.25%;
+}
+
+.offset5, .offset5:first-child {
+	margin-left: 32.25%;
+}
+
+.grid6 {
+	width: 35.5%;
+}
+
+.offset6, .offset6:first-child {
+	margin-left: 38.5%;
+}
+
+.grid7 {
+	width: 41.75%;
+}
+
+.offset7, .offset6:first-child {
+	margin-left: 44.75%;
+}
+
+.grid8 {
+	width: 48%;
+}
+
+.offset8, .offset8:first-child {
+	margin-left: 51%;
+}
+
+.grid9 {
+	width: 54.25%;
+}
+
+.offset9, .offset9:first-child {
+	margin-left: 57.25%;
+}
+
+.grid10 {
+	width: 60.5%;
+}
+
+.offset10, .offset10:first-child {
+	margin-left: 63.5%;
+}
+
+.grid11 {
+	width: 66.75%;
+}
+
+.offset11, .offset11:first-child {
+	margin-left: 69.75%;
+}
+
+.grid12 {
+	width: 73%;
+}
+
+.offset12, .offset12:first-child {
+	margin-left: 76%;
+}
+
+.grid13 {
+	width: 79.25%;
+}
+
+.offset13, .offset13:first-child {
+	margin-left: 82.25%;
+}
+
+.grid14 {
+	width: 85.5%;
+}
+
+.offset14, .offset14:first-child {
+	margin-left: 88.5%;
+}
+
+.grid15 {
+	width: 91.75%;
+}
+
+.offset15, .offset15:first-child {
+	width: 94.75%;
+}
+
+.grid16 {
+	width: 98%;
+}

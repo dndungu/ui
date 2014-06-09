@@ -1,0 +1,55 @@
+nav,
+nav a,
+nav.vertical,
+nav.vertical li {
+	width:100%;
+	display: block;
+}
+
+nav.vertical>li {
+	padding: 8px 16px 0 16px;
+}
+
+nav>li {
+	width:auto;
+	display: inline-block;
+	padding:8px 16px 8px 8px;
+}
+
+nav>li:last-child {
+	padding-right: 0;
+	position:relative;
+}
+
+nav>li:last-child>ul{
+	left:auto;
+	right:0;
+}
+
+nav>li>ul,
+nav.vertical>li>ul {
+	position:absolute;
+	display:none;
+}
+
+nav>li>ul {
+	padding:16px 0;	
+	margin-top:8px;
+	margin-left:-8px;
+}
+
+nav.vertical>li:hover ul,
+nav>li:hover ul {
+	display: block;
+}
+
+nav>li>ul>li {
+	min-width:168px;
+	padding: 4px 16px;
+	display:block;
+	vertical-align:top;
+}
+
+nav>li>ul>li.has-children {
+	display:inline-block;
+}

@@ -1,0 +1,48 @@
+form,
+select,
+textarea,
+form .title,
+form .field,
+input[type="text"]{
+	width:100%;
+	display:block;	
+}
+
+label, .label {
+	width:auto;
+	display:inline-block;
+}
+
+select,
+textarea,
+input[type="text"],
+input[type="password"]
+{
+	padding:4px;
+	border: 1px solid #CCC;
+}
+
+select {
+	width:50%;
+	padding:3px;
+	background:transparent;
+}
+
+button {
+	padding:4px 8px;
+	border:1px solid #CCC;
+}
+
+.form-horizontal .title,
+.form-horizontal .field {
+	display: inline-block;
+}
+
+.form-horizontal .title {
+	width: 28%;
+	margin: 0 2% 0 0;
+}
+
+.form-horizontal .field {
+        width: 70%;
+}

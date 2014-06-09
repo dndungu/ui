@@ -1,0 +1,25 @@
+.product-gallery {
+	display:block;
+	width:100%;
+}
+
+.product-gallery li {
+	display:inline-block;
+	font-size:.875em;
+}
+
+.product-gallery-three li {
+	height:410px;
+	margin:25px 30px;
+	text-align:center;
+	width:260px;
+}
+
+.product-gallery-picture {
+	width:260px;
+	height:260px;
+	display:block;
+	margin:15px 0;
+	background:center center scroll no-repeat transparent;
+	background-size:contain;
+}
