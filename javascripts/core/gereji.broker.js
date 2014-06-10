@@ -14,13 +14,12 @@ gereji.extend('broker', {
 			_event = typeof _event == "string" ? {type : _event, data : {}} : _event;
 			_event.data = typeof _event.data == "undefined" ? {} : _event.data;
 			try{
-				var listeners = this.events ? this.events[_event.type] : false;
-				if(!listeners) throw new Error('There  are no event listeners for ' + _event.type);
+				var listeners = this.events ? this.events[_event.type] : [];
 				for(var i in listeners){
 					typeof listeners[i] === 'function' && listeners[i](_event);
 				}
 			}catch(e){
-				console.log(e);
+				console && console.log(e);
 			}
 		}
 });

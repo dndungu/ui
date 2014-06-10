@@ -12,6 +12,11 @@
 	-o-transition: all .6s;
 	-ms-transition: all .6s;
 	transition: all .6s;
+    -webkit-transition: height .9s;
+    -moz-transition: height .9s;
+    -o-transition: height .9s;
+    -ms-transition: height .9s;
+    transition: height .9s;
 	behavior: url(/themes/default/behaviours/boxsizing.htc);
 }
 
@@ -25,6 +30,10 @@
 
 .text-right {
 	text-align:right;
+}
+
+.text-justify {
+    text-align:justify;
 }
 
 .clearfix:after {
@@ -161,8 +170,8 @@
 }
 
 .image-contain {
-	background-size:contain;
 	background:center center scroll no-repeat transparent;
+	background-size:contain;
 }
 
 .text-strike {

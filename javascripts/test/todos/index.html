@@ -1,128 +1,114 @@
 <html>
 	<head>
-		<!--
-		<link href='http://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'/>
-		<link href='http://fonts.googleapis.com/css?family=Handlee' rel='stylesheet' type='text/css'/>	
-		-->
+		<link href='//fonts.googleapis.com/css?family=Open+Sans:300,400' rel='stylesheet' type='text/css'/>
+		<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet"/>
 		<link href="../../../themes/default/default.css" rel="stylesheet" type="text/css"/>
+		<link href="./css/main.css" rel="stylesheet" type="text/css"/>
 		<script src="../../core/gereji.js"></script>
+		<script src="../../core/gereji.broker.js"></script>
+		<script src="../../core/gereji.storage.js"></script>
+		<script src="../../core/gereji.os.js"></script>
 		<script src="../../core/gereji.dom.js"></script>
-		<script>
-			var dom = new gereji.dom();
-			dom.init();
-			
-			function solicit(ev){
-				ev.preventDefault();
-				ev.dataTransfer.dropEffect = 'move';
-			}
-
-			function drag(ev){
-				ev.dataTransfer.setData("about", ev.target.getAttribute('about'));
-			}
-
-			function drop(ev){
-				ev.preventDefault();
-				var about = ev.dataTransfer.getData("about");
-				var node = document.querySelector('article[about="' + about + '"]');
-				ev.target.appendChild(node.cloneNode(true));
-				node.parentNode.removeChild(node);
-			}
-
-			function highlight(ev){
-				ev.target.className.indexOf('highlight') == -1 ? ev.target.className += ' highlight' : '';
-			}
-
-			function unhighlight(ev){
-				ev.target.className = ev.target.className.replace('hightlight', '');
-			}
-		</script>
-		<style>
-			body {
-				text-align:center;
-				font-family: 'Handlee', cursive;
-			}
-			header section:last-child ul li {
-			/*	border-right:1px solid #CCC;*/
-			}
-			main {
-			/*	border-top:1px solid #CCC; */
-			}
-			main section {
-		/*		border-right:1px solid #CCC;*/
-			}
-			article.critical, article.high, article.normal {
-				cursor:move;
-			}
-			.logo, h1, h2, h3, h4, h5, h6 {
-				font-family: 'Pacifico', cursive;
-			}
-			.dark-box, .dark-box a {
-				background:#1a1a1a;
-				color:#e6e6e6;
-			}
-			.critical {
-				background-color:#ff2a7f;
-			}
-			.high {
-				background-color:#ffd42a;
-			}
-			.normal {
-				background-color:#aad400;
-			}
-			.highlight {
-				border:2px dashed #f2f2f2;
-			}
-		</style>
+		<script src="../../apps/draggable.js"></script>
+		<script src="../../apps/collapsible.js"></script>
+		<title>zezebox</title>
 	</head>
 	<body class="text-left">
 		<header>
-			<section class="clearfix dark-box">
-				<h1 class="pull-left logo space-left">zezebox</h1>
-				<nav class="pull-right half-space-top">
-					<ul class="space-right space-left">
-						<li>
-							<a href="dosomething">Sign Out</a>
-						</li>
-					</ul>	
+			<section>
+				<section class="grid4">
+					<h1 class="logo" style="background-image:url('/ui/themes/default/images/zezebox-logo.png')">vezbo</h1>
+				</section>
+				<section class="grid12 text-right">
+					<nav class="half-space-top">
+						<ul class="space-right">
+							<li>
+								<a href="dosomething">Tasks</a>
+							</li>
+							<li>
+								<a href="dosomething">Projects</a>
+							</li>
+							<li>
+								<a href="dosomething">Clients</a>
+							</li>
+							<li>
+								<a href="dosomething">Settings</a>
+							</li>
+						</ul>	
 				</nav>
+				</section>
 			</section>
 			<section>
-				<ul>
-					<li class="grid4"><h3 class="space-left space-top">Backlog</h3></li>
-					<li class="grid4"><h3 class="space-top">Developing</h3></li>
-					<li class="grid4"><h3 class="space-top">Testing</h3></li>
-					<li class="grid4"><h3 class="space-top">Production</h3></li>
+				<ul class="clearfix">
+					<li class="grid4 pull-left">
+						<div class="pull-left">
+							<h3>Backlog</h3>
+						</div>
+						<div class="pull-right half-space-right">
+							(276) days
+						</div>
+					</li>
+					<li class="grid4 pull-left"><h3>In Progress</h3></li>
+					<li class="grid4 pull-left"><h3>Testing</h3></li>
+					<li class="grid4 pull-left"><h3>Production</h3></li>
 				</ul>
 			</section>
 		</header>
-		<main class="row half-space-top">
-			<section class="grid4 clearfix">
-				<article class="critical round-corners half-space-top half-row-padding half-column-padding" about="/api/todos/1" draggable="true" ondragstart="drag(event)">
-					<p property="title">Create six web layouts</p>
+		<main class="row half-space-top clearfix">
+			<section class="grid4 droppable pull-left">
+				<article class="critical draggable collapsible" about="/api/todos/1" draggable="true">
+					<h4 property="title" class="clearfix">Create six web layouts
+						<i class="fa fa-plus openclose"></i>
+					</h4>
+					<p property="notes" class="notes text-justify">
+						We need six web layous so that our customers can select a layout and then customize the colours according to their tastes. It is also important that we stop spending so much time customizing colors.
+					</p>
+					<form class="timesheet clearfix">
+                        <label class="grid2 text-center">
+							<a class="image-contain avatar circle" style="background-image:url('/ui/themes/default/images/me.jpg')"></a>
+						</label><label class="grid4">
+                            <input name="hours" class="round-corners text-center" type="number" min="0.25" max="32" step="0.25" size="2" maxlength="2" placeholder="hrs"/>
+                        </label><label class="grid8">
+							<button name="submitTime" class="round-corners">LOG</button>
+						</label>
+					</form>
+					<p>
+						<span class="grid2 text-center">
+							<a class="image-contain avatar circle" style="background-image:url('/ui/themes/default/images/me.jpg')"></a>
+						</span><span class="grid4">
+							09.00 hrs
+						</span><span class="grid8">9th June 2014</span>
+					</p>
+                    <p>
+						<span class="grid2 text-center">
+							<a class="image-contain avatar circle" style="background-image:url('/ui/themes/default/images/me.jpg')"></a>
+						</span><span class="grid4">12.25 hrs</span>
+                        <span class="grid8">6th June 2014</span>
+                    </p>
+                    <p>
+                        <span class="grid2 text-center">
+                            <a class="image-contain avatar circle" style="background-image:url('/ui/themes/default/images/me.jpg')"></a>
+                        </span><span class="grid4">16.50 hrs</span>
+                        <span class="grid8">5th June 2014</span>
+                    </p>
 				</article>
-				<article class="high round-corners half-space-top half-row-padding half-column-padding" about="/api/todos/2" draggable="true" ondragstart="drag(event)">
-					<p property="title">Create logo uploader</p>
+				<article class="high draggable collapsible" about="/api/todos/2" draggable="true">
+					<h4 property="title">Create logo uploader</h4>
 				</article>
-				<article class="normal round-corners half-space-top half-row-padding half-column-padding" about="/api/todos/3" draggable="true" ondragstart="drag(event)">
-					<p property="title">Create color scheme manager</p>
+				<article class="normal draggable collapsible" about="/api/todos/3" draggable="true">
+					<h4 property="title">Create color scheme manager</h4>
 				</article>
-                <article class="critical round-corners half-space-top half-row-padding half-column-padding" about="/api/todos/4" draggable="true" ondragstart="drag(event)">
-                    <p property="title">Create six web layouts</p>
-                </article>
-                <article class="normal round-corners half-space-top half-row-padding half-column-padding" about="/api/todos/5" draggable="true" ondragstart="drag(event)">
-                    <p property="title">Create color scheme manager</p>
-                </article>
-                <article class="high round-corners half-space-top half-row-padding half-column-padding" about="/api/todos/6" draggable="true" ondragstart="drag(event)">
-                    <p property="title">Create logo uploader</p>
-                </article>
-                <article class="normal round-corners half-space-top half-row-padding half-column-padding" about="/api/todos/7" draggable="true" ondragstart="drag(event)">
-                    <p property="title">Create color scheme manager</p>
+                <article class="low draggable collapsible" about="/api/todos/3" draggable="true">
+                    <h4 property="title">Create color scheme manager</h4>
                 </article>
 			</section>
-			<section class="grid4" ondrop="drop(event)" ondragenter="highlight(event)" ondragover="solicit(event)" ondragleave="unhighlight(event)" style="height:300px;"></section>
-			<section class="grid4" ondrop="drop(event)" ondragenter="highlight(event)" ondragover="solicit(event)" ondragleave="unhighlight(event)" style="height:300px;"></section>
-			<section class="grid4" ondrop="drop(event)" ondragenter="highlight(event)" ondragover="solicit(event)" ondragleave="unhighlight(event)" style="height:300px;"></section>
+			<section class="grid4 droppable pull-left"></section>
+			<section class="grid4 droppable pull-left"></section>
+			<section class="grid4 droppable pull-left"></section>
 		</main>
 		<footer></footer>
+        <script type="text/javascript">
+			gerejios.boot();
+        </script>
 	</body>
 </html>
