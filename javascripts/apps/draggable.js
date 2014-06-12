@@ -1,13 +1,15 @@
 "use strict";
-gerejios.register('basket', function(sandbox){
+os.register('basket', function(sandbox){
+	var app;
 	return {
 		init: function(){
-			sandbox.broker.on(['.draggable:dragstart'], this.dragStart);
-			sandbox.broker.on(['.draggable:dragend'], this.dragEnd);
-			sandbox.broker.on(['.droppable:dragover'], this.dragOver);
-			sandbox.broker.on(['.droppable:dragenter'], this.dragEnter);
-			sandbox.broker.on(['.droppable:dragleave'], this.dragLeave);
-			sandbox.broker.on(['.droppable:drop'], this.drop);
+			app = this;
+			sandbox.on(['.draggable:dragstart'], app.dragStart);
+			sandbox.on(['.draggable:dragend'], app.dragEnd);
+			sandbox.on(['.droppable:dragover'], app.dragOver);
+			sandbox.on(['.droppable:dragenter'], app.dragEnter);
+			sandbox.on(['.droppable:dragleave'], app.dragLeave);
+			sandbox.on(['.droppable:drop'], app.drop);
 		},
 		dragStart: function(){
 			var target = arguments[0].data.target;

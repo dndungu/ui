@@ -1,14 +1,14 @@
 "use strict";
-gerejios.register('collapsible', function(sandbox){
-	var module = null;
+os.register('collapsible', function(sandbox){
+	var app;
 	return {
 		init: function(){
-			sandbox.broker.on(['.openclose:click'], this.openClose);
-			module = this;
+			app = this;
+			sandbox.on(['.openclose:click'], app.openClose);
 		},
 		openClose: function(){
 			var target = arguments[0].data.target;
-			module.toggle(module.findCollapsible(target));
+			app.toggle(app.findCollapsible(target));
 			var open = target.className.indexOf('fa-plus') == -1;
 			target.className = open ? target.className.replace('fa-minus', 'fa-plus') : target.className.replace('fa-plus', 'fa-minus');
 		},
@@ -28,7 +28,7 @@ gerejios.register('collapsible', function(sandbox){
 			var parent = target.parentNode;
 			if(parent.className.indexOf('collapsible') != -1)
 				return parent;
-			return module.findCollapsible(parent);
+			return app.findCollapsible(parent);
 		}
 	}
 });

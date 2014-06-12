@@ -25,11 +25,9 @@ gereji.extend('os', {
 		}
 	},
 	boot : function() {
-		this.sandbox = {
-			broker: (new gereji.broker()),
-			storage: (new gereji.storage())
-		};
-		(new gereji.dom()).init(this.sandbox.broker);
+		this.sandbox = new gereji.broker();
+		this.sandbox.storage = new gereji.storage();
+		this.sandbox.sync = new gereji.sync();
 		for (var i in this.apps) {
 			if (this.apps.hasOwnProperty(i)) {
 				this.start(i);
@@ -44,4 +42,4 @@ gereji.extend('os', {
 		}
 	}
 });
-window.gerejios = new gereji.os();
+window.os = new gereji.os();

@@ -6,9 +6,10 @@
 		<link href="./css/main.css" rel="stylesheet" type="text/css"/>
 		<script src="../../core/gereji.js"></script>
 		<script src="../../core/gereji.broker.js"></script>
+		<script src="../../core/gereji.sync.js"></script>
 		<script src="../../core/gereji.storage.js"></script>
 		<script src="../../core/gereji.os.js"></script>
-		<script src="../../core/gereji.dom.js"></script>
+		<script src="../../apps/dom.js"></script>
 		<script src="../../apps/draggable.js"></script>
 		<script src="../../apps/collapsible.js"></script>
 		<title>zezebox</title>
@@ -17,7 +18,7 @@
 		<header>
 			<section>
 				<section class="grid4">
-					<h1 class="logo" style="background-image:url('/ui/themes/default/images/zezebox-logo.png')">vezbo</h1>
+					<h1 class="logo" style="background-image:url('/ui/themes/default/images/zezebox-logo.png')">zezebox</h1>
 				</section>
 				<section class="grid12 text-right">
 					<nav class="half-space-top">
@@ -63,15 +64,6 @@
 					<p property="notes" class="notes text-justify">
 						We need six web layous so that our customers can select a layout and then customize the colours according to their tastes. It is also important that we stop spending so much time customizing colors.
 					</p>
-					<form class="timesheet clearfix">
-                        <label class="grid2 text-center">
-							<a class="image-contain avatar circle" style="background-image:url('/ui/themes/default/images/me.jpg')"></a>
-						</label><label class="grid4">
-                            <input name="hours" class="round-corners text-center" type="number" min="0.25" max="32" step="0.25" size="2" maxlength="2" placeholder="hrs"/>
-                        </label><label class="grid8">
-							<button name="submitTime" class="round-corners">LOG</button>
-						</label>
-					</form>
 					<p>
 						<span class="grid2 text-center">
 							<a class="image-contain avatar circle" style="background-image:url('/ui/themes/default/images/me.jpg')"></a>
@@ -91,6 +83,15 @@
                         </span><span class="grid4">16.50 hrs</span>
                         <span class="grid8">5th June 2014</span>
                     </p>
+					<form class="timesheet clearfix">
+                        <label class="grid2 text-center">
+							<a class="image-contain avatar circle" style="background-image:url('/ui/themes/default/images/me.jpg')"></a>
+						</label><label class="grid4">
+                            <input name="hours" class="text-center" type="number" min="0.25" max="32" step="0.25" size="2" maxlength="2" placeholder="hrs"/>
+                        </label><label class="grid8">
+							<button name="submitTime">LOG TIME</button>
+						</label>
+					</form>
 				</article>
 				<article class="high draggable collapsible" about="/api/todos/2" draggable="true">
 					<h4 property="title">Create logo uploader</h4>
@@ -108,7 +109,7 @@
 		</main>
 		<footer></footer>
         <script type="text/javascript">
-			gerejios.boot();
+			os.boot();
         </script>
 	</body>
 </html>
