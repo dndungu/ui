@@ -1,0 +1,53 @@
+@import url("../default/default.css");
+
+* {
+	font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
+}
+
+a {
+	color:#0774bb;
+}
+
+header {
+	top:0;
+	left:0;
+	right:0;
+	position:fixed;
+	height:80px;
+	z-index:10;
+}
+
+main {
+	margin:80px 0 0 0;
+}
+
+header a {
+	display:inline-block;
+	text-transform:uppercase;
+}
+
+.logo, header nav {
+	margin-top:22px;
+}
+
+
+.first-color {
+	color:#000;
+	background-color:#fff;
+}
+
+.second-color {
+	color:#fff;
+	background-color:#0774bb;
+	border-color:#0774bb;
+}
+
+.third-color {
+	color:#fff;
+	background-color:#000;
+	border-color:#333;
+}
+
+.fill-vertical {
+	padding:150px 0 180px 0;
+}
