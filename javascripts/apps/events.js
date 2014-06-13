@@ -1,5 +1,5 @@
 "use strict";
-os.register('events', function(sandbox){
+gereji.apps.register('events', function(sandbox){
 	var app;
 	return {
 		init: function(){
@@ -10,6 +10,9 @@ os.register('events', function(sandbox){
 					app.fire.apply(app, arguments);
 				}
 			}
+			document.getElementsByTagName("body")[0].onload = function(){
+				sandbox.emit({type: "body:load", data: arguments[0]});
+			};
 		},
 		fire: function(event){
 			event = event || window.event;
@@ -24,6 +27,7 @@ os.register('events', function(sandbox){
 			}
 		},
 		events: [
+			'load',
 			'change',
 			'resize',
 			'submit',

@@ -1,5 +1,5 @@
 "use strict";
-os.register('form', function(sandbox){
+gereji.apps.register('form', function(sandbox){
 	var app;
 	return {
 		init: function(){
@@ -12,15 +12,30 @@ os.register('form', function(sandbox){
 			var target = arguments[0].data.target;
 			var property = target.getAttribute('property');
 			var targetForm = app.findForm(target);
-			if(!property || !targetForm || !targetForm.id)
+			if(!property || !targetForm || !targetForm.id || arguments[0].data.event.keyCode == 13)
 				return;
 			var id = targetForm.id;
 			var key = (property.indexOf('[') == -1) ? null : property.match(/\[(.*)\]/)[1];
 			var name = property.replace(/\[(.*)\]/, '');
 			var forms = sandbox.storage.get('forms');
 			forms[id] = forms[id] ? forms[id] : {};
-			key ? eval("forms." + id + "." + name + " = {"+ key + " : \"" + target.value + "\"}") : eval("forms." + id + "." + name + ' = "' + target.value + '"');
+			app.inject(target.value, name, forms[id], key);
 			sandbox.storage.set("forms", forms)	
+		},
+		inject: function(value, name, obj, key){
+			var n = name.match(/\./g);
+			var levels = name.split('.');
+			var i = 0;
+			var path = 'obj.' + levels[0];
+			if(n){
+				while(i++ < n.length){
+					eval(path + " = " + path + " ? " + path + " : {}");
+					path += "." + levels[i]; 
+				}
+			}
+			key || eval(path + ' = "' + value + '"');
+			key && eval(path + " = " + path + " instanceof Array ? " + path + " : []");
+			key && eval(path + '[' + key + '] = "' + value + '"');
 		},
 		findForm: function(target){
 			var tag = target.tagName.toLowerCase();
@@ -48,10 +63,9 @@ os.register('form', function(sandbox){
 			var id = app.findForm(target).id;
 			var forms = sandbox.storage.get("forms");
 			sandbox.sync.post(url, JSON.stringify(forms[id]), function(response){
-				console.log(response);
 				var type = "#" + id + ":data";
 				sandbox.emit({type: type, data: response});
-				forms[id] = {};
+				delete forms[id];
 				sandbox.storage.set("forms", forms);
 			});
 			var type = "#" + id + ":sync";

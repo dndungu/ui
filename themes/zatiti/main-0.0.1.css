@@ -67,7 +67,11 @@ header a {
 	float:left;
 }
 
-.wizard-item:last-child {
-	width:100%;
+.wizard-item:first-child {
 	display:inline-block;
+	width:100%;
+}
+
+.wizard-item-content {
+	display:block;
 }

@@ -1,5 +1,5 @@
 "use strict";
-os.register('collapsible', function(sandbox){
+gereji.apps.register('collapsible', function(sandbox){
 	var app;
 	return {
 		init: function(){

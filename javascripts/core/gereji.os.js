@@ -27,6 +27,7 @@ gereji.extend('os', {
 	boot : function() {
 		this.sandbox = new gereji.broker();
 		this.sandbox.validator = new gereji.validator();
+		this.sandbox.transition = new gereji.transition();
 		this.sandbox.storage = new gereji.storage();
 		this.sandbox.storage.init();
 		this.sandbox.sync = new gereji.sync();
@@ -45,4 +46,4 @@ gereji.extend('os', {
 		}
 	}
 });
-window.os = new gereji.os();
+gereji.apps = new gereji.os();

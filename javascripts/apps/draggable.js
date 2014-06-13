@@ -1,5 +1,5 @@
 "use strict";
-os.register('basket', function(sandbox){
+gereji.apps.register('basket', function(sandbox){
 	var app;
 	return {
 		init: function(){
