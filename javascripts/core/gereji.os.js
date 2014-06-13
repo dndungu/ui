@@ -26,8 +26,11 @@ gereji.extend('os', {
 	},
 	boot : function() {
 		this.sandbox = new gereji.broker();
+		this.sandbox.validator = new gereji.validator();
 		this.sandbox.storage = new gereji.storage();
+		this.sandbox.storage.init();
 		this.sandbox.sync = new gereji.sync();
+		this.sandbox.sync.init();
 		for (var i in this.apps) {
 			if (this.apps.hasOwnProperty(i)) {
 				this.start(i);

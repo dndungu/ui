@@ -1,9 +1,10 @@
 "use strict";
 gereji.extend('sync', {
 	init: function(){
-		this.headers = [];
-		this.headers.push({"X-Powered-By": "Gereji"});
-		this.headers.push({"Cache-Control": "no-cache"});
+		this.headers = {};
+		this.headers["X-Powered-By"] = "Gereji";
+		this.headers["Content-Type"] = "application/json";
+		this.headers["Cache-Control"] = "no-cache";
 		this.options = {"async": true};
 	},
 	get: function(uri, then){
@@ -27,6 +28,9 @@ gereji.extend('sync', {
 				xhr.readyState === 4 && xhr.status === 200 && args.complete(xhr.responseText);
 			};
             transport.open(args.method, args.uri, this.options);
+			for(var i in this.headers){
+				transport.setRequestHeader(i, this.headers[i]);
+			}
             transport.send(args.data)
         }catch(e){
             console && console.log(e);

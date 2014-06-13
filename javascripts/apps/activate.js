@@ -4,13 +4,10 @@ os.register('activate', function(sandbox){
 	return {
 		init: function(){
 			app = this;
-			sandbox.on('#activate-domain:submit', app.domain);
+			sandbox.on('#activate-domain:sync', app.showSignIn);
 		},
-		domain: function(){
-			var event = arguments[0].data.event;
-			event.preventDefault();
-			var target = arguments[0].data.target;
-			console.log(target);
+		showSignIn: function(){
+			console.log(arguments[0]);
 		}
 	};
 });

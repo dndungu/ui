@@ -195,3 +195,12 @@
 	background-size:contain;
 	background:center center scroll no-repeat transparent;
 }
+
+.valid-input {
+	border:1px solid #59bd45;
+}
+
+.invalid-input {
+	border:1px solid #fb3a3a;
+	background-color:#ffdbdb;
+}

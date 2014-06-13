@@ -48,6 +48,26 @@ header a {
 	border-color:#333;
 }
 
-.fill-vertical {
-	padding:150px 0 180px 0;
+.activate h2, .activate h4 {
+	font-weight:300;
+}
+
+.activate h2{
+	font-size:3em;
+}
+
+.activate h4 {
+	color:#000;
+}
+
+.wizard-item {
+	display:none;
+	overflow:hidden;
+	width:0;
+	float:left;
+}
+
+.wizard-item:last-child {
+	width:100%;
+	display:inline-block;
 }
