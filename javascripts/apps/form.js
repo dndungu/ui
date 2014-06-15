@@ -24,14 +24,13 @@ gereji.apps.register('form', function(sandbox){
 		},
 		inject: function(value, name, obj, key){
 			var n = name.match(/\./g);
+			n = n ? n.length : 0;
 			var levels = name.split('.');
 			var i = 0;
 			var path = 'obj.' + levels[0];
-			if(n){
-				while(i++ < n.length){
-					eval(path + " = " + path + " ? " + path + " : {}");
-					path += "." + levels[i]; 
-				}
+			while(i++ < n){
+				eval(path + " = " + path + " ? " + path + " : {}");
+				path += "." + levels[i]; 
 			}
 			key || eval(path + ' = "' + value + '"');
 			key && eval(path + " = " + path + " instanceof Array ? " + path + " : []");
@@ -49,12 +48,18 @@ gereji.apps.register('form', function(sandbox){
 			var target = arguments[0].data.target;
 			var event = arguments[0].data.event;
 			event.preventDefault();
-			var inputs = target.getElementsByTagName("input");
-			var textareas = target.getElementsByTagName("textarea");
-			var selects = target.getElementsByTagName("select");
 			var valid = true;
+			var inputs = target.getElementsByTagName("input");
 			for(var i = 0; i < inputs.length; i++){
 				app.validate({data: {target : inputs[i]}}) || (valid = false);
+			}
+			var textareas = target.getElementsByTagName("textarea");
+			for(var i = 0; i < textareas.length; i++){
+				app.validate({data: {target : textareas[i]}}) || (valid = false);
+			}
+			var selects = target.getElementsByTagName("select");
+			for(var i = 0; i < selects.length; i++){
+				app.validate({data: {target : selects[i]}}) || (valid = false);
 			}
 			valid && app.sync(target);
 		},

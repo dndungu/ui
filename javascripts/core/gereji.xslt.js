@@ -10,6 +10,9 @@ gereji.extend('xslt', {
 		this.xml = this.parse(this.json2xml(this.json));
 		this.html = this.processor.transformToFragment(this.xml, document);
 	},
+	getHTML: function(){
+		return this.html;
+	},
 	json2xml: function(model){
 		var xml = this.createXML({model : this.model});
 		xml.unshift('<?xml version="1.0"?>');
@@ -24,9 +27,6 @@ gereji.extend('xslt', {
             xml.push('<'+name+'>'+value+'</'+name+'>');
         }
         return xml;
-	},
-	getHTML: function(){
-		return this.html;
 	},
 	parse: function(){
 		var html = arguments[0];
