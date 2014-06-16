@@ -19,30 +19,26 @@ gereji.extend('os', {
 	},
 	stop : function(appId) {
 		var data = this.apps[appId];
-		if (data.instance) {
-			data.instance.kill();
-			data.instance = null;
-		}
+		if(!data.instance)
+			return;
+		data.instance.kill();
+		data.instance = null;
 	},
 	boot : function() {
 		this.sandbox = new gereji.broker();
 		this.sandbox.validator = new gereji.validator();
 		this.sandbox.transition = new gereji.transition();
 		this.sandbox.storage = new gereji.storage();
-		this.sandbox.storage.init();
 		this.sandbox.sync = new gereji.sync();
+		this.sandbox.storage.init();
 		this.sandbox.sync.init();
 		for (var i in this.apps) {
-			if (this.apps.hasOwnProperty(i)) {
-				this.start(i);
-			}
+			this.apps.hasOwnProperty(i) && this.start(i);
 		}
 	},
 	halt : function() {
 		for ( var i in this.apps) {
-			if (this.apps.hasOwnProperty(i)) {
-				this.stop(i);
-			}
+			this.apps.hasOwnProperty(i) && this.stop(i);
 		}
 	}
 });

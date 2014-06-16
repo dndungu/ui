@@ -7,6 +7,10 @@ gereji.extend('sync', {
 		this.headers["Cache-Control"] = "no-cache";
 		this.options = {"async": true};
 	},
+	header: function(key, value){
+		this.headers[key] = value;
+		return this;
+	},
 	get: function(uri, then){
 		return this.request({uri: uri, method: 'GET', complete: then});
 	},
