@@ -26,6 +26,8 @@ gereji.extend('os', {
 	},
 	boot : function() {
 		this.sandbox = new gereji.broker();
+		this.sandbox.models = {};
+		this.sandbox.collections = {};
 		this.sandbox.validator = new gereji.validator();
 		this.sandbox.transition = new gereji.transition();
 		this.sandbox.storage = new gereji.storage();

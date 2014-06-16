@@ -1,21 +1,26 @@
 "use strict";
 gereji.extend("model", {
-	meta: {},
-	data: {}
+	store: {
+		meta: {},
+		data: {}
+	},
 	init: function(){
+		this.broker = new gereji.broker();
+		this.ajax = new gereji.sync();
+		this.ajax.init();
 		return this;
 	},
 	meta: function(){
 		var key = arguments[0] ? arguments[0] : undefined;
 		var value = arguments[1] ? arguments[1] : undefined;
 		if(value != undefined)
-			this.meta[key] = value;
+			this.store.meta[key] = value;
 		if(key != undefined && value == undefined)
-			return this.meta[key] ? this.meta[key] : undefined;
+			return this.store.meta[key] ? this.store.meta[key] : undefined;
 		return this;
 	},
 	set: function(key, value){
-		var test = 'this.data';
+		var test = 'this.store.data';
 		var path = key.replace(/\[(.*)\]/, '').split('.');
 		for(var i in path){
 			test += "." + path[i];
@@ -28,7 +33,7 @@ gereji.extend("model", {
 		return this;
 	},
 	get: function(key){
-		var test = 'this.data';
+		var test = 'this.store.data';
 		var path = key.replace(/\[(.*)\]/, '').split('.');
 		var index = (key.indexOf('[') == -1) ? false : key.match(/\[(.*)\]/)[1];
 		var value = undefined;
@@ -38,15 +43,14 @@ gereji.extend("model", {
 		}
 		return value;
 	},
-	sync: function(then){
+	sync: function(){
 		var url = this.meta("about");
 		var name = this.meta("name");
-		sandbox.sync.post(url, this.data, function(response){
-			var type = "model." + name + ":data";
-			then({type: type, data: response});
+		var that = this;
+		this.ajax.post(url, JSON.stringify(this.store.data), function(response){
+			that.broker.emit({type: "sync", data: response});
 		});
-		var type = "model." + name + ":sync";
-		then({type: type, data: this});
+		this.broker.emit({type: "submit", data: this.store.data});
 	},
 	destroy: function(){
 		this.store = {};

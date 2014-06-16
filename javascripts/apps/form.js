@@ -7,34 +7,42 @@ gereji.apps.register('form', function(sandbox){
 			sandbox.on(['input:keyup', 'textarea:keyup', 'select:change'], app.save);
 			sandbox.on(['input:change', 'textarea:change', 'select:change'], app.validate);
 			sandbox.on(['form:submit'], app.submit);
+			return this;
 		},
 		save: function(){
 			var target = arguments[0].data.target;
 			var property = target.getAttribute('property');
-			var targetForm = app.findForm(target);
-			if(!property || !targetForm || !targetForm.id || arguments[0].data.event.keyCode == 13)
+			var form = app.findForm(target);
+			var _id = app.findId(form);
+			var about = form.getAttribute('about');
+			if(!property || !form || arguments[0].data.event.keyCode == 13)
 				return;
-			var id = targetForm.id;
-			var key = (property.indexOf('[') == -1) ? null : property.match(/\[(.*)\]/)[1];
-			var name = property.replace(/\[(.*)\]/, '');
-			var forms = sandbox.storage.get('forms');
-			forms[id] = forms[id] ? forms[id] : {};
-			app.inject(target.value, name, forms[id], key);
-			sandbox.storage.set("forms", forms)	
+			if(!_id || !sandbox.validator.test('uuid', _id))
+				_id = app.createIdInput(form);
+			sandbox.models[_id] = sandbox.models[_id] ? sandbox.models[_id] : app.initModel({about: about, form: form, _id : _id});
+			sandbox.models[_id].set(property, target.value);
+			sandbox.models[_id].broker.emit({type: "change", data: {property: target.value}});
 		},
-		inject: function(value, name, obj, key){
-			var n = name.match(/\./g);
-			n = n ? n.length : 0;
-			var levels = name.split('.');
-			var i = 0;
-			var path = 'obj.' + levels[0];
-			while(i++ < n){
-				eval(path + " = " + path + " ? " + path + " : {}");
-				path += "." + levels[i]; 
-			}
-			key || eval(path + ' = "' + value + '"');
-			key && eval(path + " = " + path + " instanceof Array ? " + path + " : []");
-			key && eval(path + '[' + key + '] = "' + value + '"');
+		initModel: function(){
+			var args = arguments[0];
+			var model = new gereji.model();
+			model.init();
+			model.meta("about", args.about);
+			model.meta("name", args.form.getAttribute("name"));
+			model.set("_id", args._id);
+			var type = "model." + args.form.name + ":create";
+			sandbox.emit({type: type, data: model});
+			return model;
+		},
+		createIdInput: function(form){
+			var _id = sandbox.storage.uuid();
+			var input = document.createElement("input");
+			input.name = "_id";
+			input.value = _id;
+			input.setAttribute("type", "hidden");
+			input.setAttribute("property", "_id");
+			form.appendChild(input);
+			return _id;
 		},
 		findForm: function(target){
 			var tag = target.tagName.toLowerCase();
@@ -44,37 +52,36 @@ gereji.apps.register('form', function(sandbox){
 				return null;
 			return app.findForm(target.parentNode);
 		},
+		findId: function(target){
+			var inputs = target.getElementsByTagName("input");
+			for(var i=0; i < inputs.length; i++){
+				if(inputs[i].name == '_id')
+					return inputs[i].value;
+			}
+			return undefined;
+		},
 		submit: function(){
 			var target = arguments[0].data.target;
-			var event = arguments[0].data.event;
-			event.preventDefault();
-			var valid = true;
-			var inputs = target.getElementsByTagName("input");
-			for(var i = 0; i < inputs.length; i++){
-				app.validate({data: {target : inputs[i]}}) || (valid = false);
-			}
-			var textareas = target.getElementsByTagName("textarea");
-			for(var i = 0; i < textareas.length; i++){
-				app.validate({data: {target : textareas[i]}}) || (valid = false);
-			}
-			var selects = target.getElementsByTagName("select");
-			for(var i = 0; i < selects.length; i++){
-				app.validate({data: {target : selects[i]}}) || (valid = false);
-			}
-			valid && app.sync(target);
+			var about = target.getAttribute('about');
+			var _id = app.findId(target);
+			if(!_id || !about)
+				return;
+			arguments[0].data.event.preventDefault();
+			var model =  sandbox.models[_id] ? sandbox.models[_id] : app.initModel({about: about, form: target, _id : _id});
+			app.parse("input", target, model);
+			app.parse("textarea", target, model);
+			app.parse("select", target, model);
+			model.sync();
+			return this;
 		},
-		sync: function(target){
-			var url = target.getAttribute("about");
-			var id = app.findForm(target).id;
-			var forms = sandbox.storage.get("forms");
-			sandbox.sync.post(url, JSON.stringify(forms[id]), function(response){
-				var type = "#" + id + ":data";
-				sandbox.emit({type: type, data: response});
-				delete forms[id];
-				sandbox.storage.set("forms", forms);
-			});
-			var type = "#" + id + ":sync";
-			sandbox.emit({type: type, data: target});
+		parse: function(tagName, target, model){
+			var elements = target.getElementsByTagName(tagName);
+			for(var i = 0; i < elements.length; i++){
+				if(!app.validate({data: {target : elements[i]}}))
+					return;
+				var property = elements[i].getAttribute("property");
+				property && model.set(property, elements[i].value);
+			}
 		},
 		validate: function(){
 			var target = arguments[0].data.target;
@@ -86,13 +93,13 @@ gereji.apps.register('form', function(sandbox){
 			for(var i in cls){
 				var test = sandbox.validator.test(cls[i], value);
 				app.addClass((test ? " valid-input" : " invalid-input"), target);
-				test || app.setValue("", target);
-				!test && target.className.indexOf("required") != -1 && (valid = false);
+				if(test)
+					continue;
+				target.value = "";
+				if(target.className.indexOf("required") != -1)
+					valid = false;
 			}
 			return valid;
-		},
-		setValue: function(value, target){
-			target.value = value;
 		},
 		addClass: function(cls, target){
 			cls = cls instanceof Array ? cls : [cls];
