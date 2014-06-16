@@ -3,7 +3,16 @@ gereji.extend("model", {
 	meta: {},
 	data: {}
 	init: function(){
-		
+		return this;
+	},
+	meta: function(){
+		var key = arguments[0] ? arguments[0] : undefined;
+		var value = arguments[1] ? arguments[1] : undefined;
+		if(value != undefined)
+			this.meta[key] = value;
+		if(key != undefined && value == undefined)
+			return this.meta[key] ? this.meta[key] : undefined;
+		return this;
 	},
 	set: function(key, value){
 		var test = 'this.data';
@@ -16,6 +25,7 @@ gereji.extend("model", {
 		index || eval(test + ' = "' + value + '"');
 		index && eval(test + " = " + test + " instanceof Array ? " + test + " : []");
 		index && eval(test + '[' + index + '] = "' + value + '"');
+		return this;
 	},
 	get: function(key){
 		var test = 'this.data';
@@ -28,10 +38,15 @@ gereji.extend("model", {
 		}
 		return value;
 	},
-	about: function(){
-		if(arguments[0])
-			this.meta["about"] = arguments[0];
-		return this.meta["about"];
+	sync: function(then){
+		var url = this.meta("about");
+		var name = this.meta("name");
+		sandbox.sync.post(url, this.data, function(response){
+			var type = "model." + name + ":data";
+			then({type: type, data: response});
+		});
+		var type = "model." + name + ":sync";
+		then({type: type, data: this});
 	},
 	destroy: function(){
 		this.store = {};

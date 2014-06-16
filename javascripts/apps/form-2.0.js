@@ -7,34 +7,23 @@ gereji.apps.register('form', function(sandbox){
 			sandbox.on(['input:keyup', 'textarea:keyup', 'select:change'], app.save);
 			sandbox.on(['input:change', 'textarea:change', 'select:change'], app.validate);
 			sandbox.on(['form:submit'], app.submit);
+			sandbox.models = {};
 		},
 		save: function(){
 			var target = arguments[0].data.target;
 			var property = target.getAttribute('property');
-			var targetForm = app.findForm(target);
-			if(!property || !targetForm || !targetForm.id || arguments[0].data.event.keyCode == 13)
+			var about = target.getAttribute('about');
+			var form = app.findForm(target);
+			var _id = app.findId(form);
+			if(!property || !form || arguments[0].data.event.keyCode == 13)
 				return;
-			var id = targetForm.id;
-			var key = (property.indexOf('[') == -1) ? null : property.match(/\[(.*)\]/)[1];
-			var name = property.replace(/\[(.*)\]/, '');
-			var forms = sandbox.storage.get('forms');
-			forms[id] = forms[id] ? forms[id] : {};
-			app.inject(target.value, name, forms[id], key);
-			sandbox.storage.set("forms", forms)	
-		},
-		inject: function(value, name, obj, key){
-			var n = name.match(/\./g);
-			n = n ? n.length : 0;
-			var levels = name.split('.');
-			var i = 0;
-			var path = 'obj.' + levels[0];
-			while(i++ < n){
-				eval(path + " = " + path + " ? " + path + " : {}");
-				path += "." + levels[i]; 
-			}
-			key || eval(path + ' = "' + value + '"');
-			key && eval(path + " = " + path + " instanceof Array ? " + path + " : []");
-			key && eval(path + '[' + key + '] = "' + value + '"');
+			if(!_id || !sandbox.validator.test('uuid', _id))
+				_id = sandbox.storage.uuiid();
+			if(!sandbox.models[_id])
+				sandbox.models[_id] = (new gereji.model()).meta("about", about).set("name", form.name).set("_id", _id);
+			sandbox.models[_id].set(property, target.value);
+			var type = "model." + sandbox.models[_id].get("name") + ":change";
+			sandbox.emit({type: type, data: sandbox.models[_id]});
 		},
 		findForm: function(target){
 			var tag = target.tagName.toLowerCase();
@@ -44,37 +33,37 @@ gereji.apps.register('form', function(sandbox){
 				return null;
 			return app.findForm(target.parentNode);
 		},
+		findId: function(target){
+			var inputs = target.getElementsByTagName("input");
+			for(var i=0; i < inputs.length; i++){
+				if(inputs[i].name == '_id')
+					return inputs[i].value;
+			}
+			return undefined;
+		},
 		submit: function(){
 			var target = arguments[0].data.target;
-			var event = arguments[0].data.event;
-			event.preventDefault();
-			var valid = true;
+			arguments[0].data.event.preventDefault();
+			var model = sandbox.models[(app.findId(target))];
 			var inputs = target.getElementsByTagName("input");
 			for(var i = 0; i < inputs.length; i++){
-				app.validate({data: {target : inputs[i]}}) || (valid = false);
+				if(!app.validate({data: {target : input[i]}}))
+					return;
+				model.set(inputs[i].getAttribute("property"), inputs[i].value);
 			}
 			var textareas = target.getElementsByTagName("textarea");
 			for(var i = 0; i < textareas.length; i++){
-				app.validate({data: {target : textareas[i]}}) || (valid = false);
+				if(!app.validate({data: {target : textareas[i]}}))
+					return;
+				model.set(textareas[i].getAttribute("property"), textareas[i].value);
 			}
 			var selects = target.getElementsByTagName("select");
 			for(var i = 0; i < selects.length; i++){
-				app.validate({data: {target : selects[i]}}) || (valid = false);
+				if(!app.validate({data: {target : selects[i]}}))
+					return;
+				model.set(selects[i].getAttribute("property"), selects[i].value);
 			}
-			valid && app.sync(target);
-		},
-		sync: function(target){
-			var url = target.getAttribute("about");
-			var id = app.findForm(target).id;
-			var forms = sandbox.storage.get("forms");
-			sandbox.sync.post(url, JSON.stringify(forms[id]), function(response){
-				var type = "#" + id + ":data";
-				sandbox.emit({type: type, data: response});
-				delete forms[id];
-				sandbox.storage.set("forms", forms);
-			});
-			var type = "#" + id + ":sync";
-			sandbox.emit({type: type, data: target});
+			model.sync(target);
 		},
 		validate: function(){
 			var target = arguments[0].data.target;
