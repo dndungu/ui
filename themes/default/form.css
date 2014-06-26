@@ -28,7 +28,7 @@ select {
 	background:transparent;
 }
 
-button {
+button, .button {
 	height:30px;
 	padding:4px 8px;
 	border:1px solid #CCC;

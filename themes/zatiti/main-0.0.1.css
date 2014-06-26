@@ -42,6 +42,10 @@ header a {
 	border-color:#0774bb;
 }
 
+.second-color a {
+	color:#fff;
+}
+
 .third-color {
 	color:#fff;
 	background-color:#000;

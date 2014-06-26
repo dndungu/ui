@@ -1,13 +1,11 @@
 "use strict";
 gereji.extend("model", {
-	store: {
-		meta: {},
-		data: {}
-	},
 	init: function(){
 		this.broker = new gereji.broker();
+		this.broker.init();
 		this.ajax = new gereji.sync();
 		this.ajax.init();
+		this.store = {data: {}, meta: {}};
 		return this;
 	},
 	meta: function(){
@@ -47,10 +45,12 @@ gereji.extend("model", {
 		var url = this.meta("about");
 		var name = this.meta("name");
 		var that = this;
-		this.ajax.post(url, JSON.stringify(this.store.data), function(response){
+		this.broker.emit({type: "submit", data: this.store.data});
+		this.ajax.post(url, JSON.stringify(this.store.data), function(){
+			var response = JSON.parse(arguments[0]);
+			that.response = response;
 			that.broker.emit({type: "sync", data: response});
 		});
-		this.broker.emit({type: "submit", data: this.store.data});
 	},
 	destroy: function(){
 		this.store = {};

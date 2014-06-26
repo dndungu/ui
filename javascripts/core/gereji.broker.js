@@ -1,6 +1,8 @@
 "use strict"
 gereji.extend('broker', {
-		events: [],
+		init: function(){
+			this.events = [];
+		},
 		on : function() {
 			var types = typeof arguments[0] == "string" ? [ arguments[0] ] : arguments[0];
 			for ( var i in types) {

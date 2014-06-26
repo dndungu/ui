@@ -1,14 +1,41 @@
 "use strict";
 gereji.extend('xslt', {
 	init: function(){
-		this.xsl = this.parse(arguments[0]);
+		this.status = null;
+		var name = arguments[0];
+		this.broker = new gereji.broker();
+		this.broker.init();
+		this.sync = new gereji.sync();
+		this.sync.init();
 		this.processor = new XSLTProcessor();
-		this.processor.importStylesheet(this.xsl);
+		this.storage = new gereji.storage();
+		this.storage.init();
+		var templates = this.storage.get("templates");
+		templates.hasOwnProperty(name) ? (this.status = "ready") : this.fetch(name);
+		templates.hasOwnProperty(name) && (this.xsl = templates[name]);
+		return this;
+	},
+	ready: function(){
+		return (this.status == "ready");
+	},
+	fetch: function(name){
+		var url = "/templates/" + name + ".xsl";
+		var that = this;
+		this.sync.get(url, function(xsl){
+			that.xsl = xsl;
+			that.status = "ready";
+			that.broker.emit({type: "update", data: xsl});
+			var templates = that.storage.get("templates");
+			templates[name] = xsl;
+			that.storage.set("templates", templates);
+		});
+		return this;
 	},
 	transform: function(){
-		this.model = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];
-		this.xml = this.parse(this.json2xml(this.json));
-		this.html = this.processor.transformToFragment(this.xml, document);
+		this.processor.importStylesheet(this.parse(this.xsl));
+		var model = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];
+		var xml = this.parse(this.json2xml(model));
+		this.html = this.processor.transformToFragment(xml, document);
 	},
 	getHTML: function(){
 		return this.html;
@@ -29,13 +56,11 @@ gereji.extend('xslt', {
         return xml;
 	},
 	parse: function(){
-		var html = arguments[0];
 		try{
-			var doc = (new DOMParser).parseFromString(html, "application/xml");
-			return doc;
+			return ((new DOMParser).parseFromString(arguments[0], "application/xml"));
 		}catch(e){
 			var doc = document.implementation.createHTMLDocument("");
-			doc.documentElement.innerHTML = html;
+			doc.documentElement.innerHTML = arguments[0];
 			return doc;
 		}
 	}

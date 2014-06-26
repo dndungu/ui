@@ -1,3 +1,7 @@
+nav a{
+	display:inline-block;
+}
+
 nav>ul,
 nav>ul a {
 	width:100%;
@@ -7,12 +11,18 @@ nav>ul a {
 nav>ul>li {
 	width:auto;
 	display:inline-block;
+}
+
+nav>ul>li>a{
 	padding:8px 16px 8px 8px;
 }
 
 nav>ul>li:last-child {
-	padding-right:0;
 	position:relative;
+}
+
+nav>ul>li:last-child>a {
+	padding-right:0;
 }
 
 nav>ul>li:last-child>ul {
@@ -39,6 +49,9 @@ nav>ul>li>ul>li {
 	min-width:168px;
 	display:block;
 	vertical-align:top;
+}
+
+nav>ul>li>ul>li>a {
 	padding:4px 16px;
 }
 

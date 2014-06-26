@@ -46,7 +46,7 @@ gereji.extend('transition', {
 		next.style.transition = transition;
 		current.style[style] = "0";
 		next.style[style] = String(max) + "px";
-		then && then();
+		then && setTimeout(then, this.options.duration);
 		return this;
 	},
 	next: function(target){

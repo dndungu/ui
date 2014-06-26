@@ -19,13 +19,13 @@ gereji.apps.register('form', function(sandbox){
 				return;
 			if(!_id || !sandbox.validator.test('uuid', _id))
 				_id = app.createIdInput(form);
-			sandbox.models[_id] = sandbox.models[_id] ? sandbox.models[_id] : app.initModel({about: about, form: form, _id : _id});
+			sandbox.models[_id] = sandbox.models.hasOwnProperty(_id) ? sandbox.models[_id] : app.createModel({about: about, form: form, _id : _id});
 			sandbox.models[_id].set(property, target.value);
 			sandbox.models[_id].broker.emit({type: "change", data: {property: target.value}});
 		},
-		initModel: function(){
+		createModel: function(){
 			var args = arguments[0];
-			var model = new gereji.model();
+			var model = (new gereji.model());
 			model.init();
 			model.meta("about", args.about);
 			model.meta("name", args.form.getAttribute("name"));
@@ -35,7 +35,7 @@ gereji.apps.register('form', function(sandbox){
 			return model;
 		},
 		createIdInput: function(form){
-			var _id = sandbox.storage.uuid();
+			var _id = (new gereji.storage()).uuid();
 			var input = document.createElement("input");
 			input.name = "_id";
 			input.value = _id;
@@ -63,14 +63,13 @@ gereji.apps.register('form', function(sandbox){
 		submit: function(){
 			var target = arguments[0].data.target;
 			var about = target.getAttribute('about');
-			var _id = app.findId(target);
-			if(!_id || !about)
+			if(!about)
 				return;
+			var _id = app.findId(target);
 			arguments[0].data.event.preventDefault();
-			var model =  sandbox.models[_id] ? sandbox.models[_id] : app.initModel({about: about, form: target, _id : _id});
-			app.parse("input", target, model);
-			app.parse("textarea", target, model);
-			app.parse("select", target, model);
+			var model =  sandbox.models[_id] ? sandbox.models[_id] : app.createModel({about: about, form: target, _id : _id});
+			if(!(app.parse("input", target, model) && app.parse("textarea", target, model) && app.parse("select", target, model)))
+				return;
 			model.sync();
 			return this;
 		},
@@ -78,10 +77,11 @@ gereji.apps.register('form', function(sandbox){
 			var elements = target.getElementsByTagName(tagName);
 			for(var i = 0; i < elements.length; i++){
 				if(!app.validate({data: {target : elements[i]}}))
-					return;
+					return false;
 				var property = elements[i].getAttribute("property");
 				property && model.set(property, elements[i].value);
 			}
+			return true;
 		},
 		validate: function(){
 			var target = arguments[0].data.target;

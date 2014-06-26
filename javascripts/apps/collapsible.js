@@ -4,7 +4,7 @@ gereji.apps.register('collapsible', function(sandbox){
 	return {
 		init: function(){
 			app = this;
-			sandbox.on(['.openclose:click'], app.openClose);
+			sandbox.on(['.openclose:mousedown'], app.openClose);
 		},
 		openClose: function(){
 			var target = arguments[0].data.target;
