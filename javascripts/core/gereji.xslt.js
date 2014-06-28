@@ -2,24 +2,26 @@
 gereji.extend('xslt', {
 	init: function(){
 		this.status = null;
-		var name = arguments[0];
+		var type = arguments[0];
+		var name = arguments[1];
 		this.broker = new gereji.broker();
 		this.broker.init();
 		this.sync = new gereji.sync();
 		this.sync.init();
-		this.processor = new XSLTProcessor();
 		this.storage = new gereji.storage();
 		this.storage.init();
 		var templates = this.storage.get("templates");
-		templates.hasOwnProperty(name) ? (this.status = "ready") : this.fetch(name);
-		templates.hasOwnProperty(name) && (this.xsl = templates[name]);
+		if(!templates.hasOwnProperty(name))
+			return this.fetch(type, name);
+		this.xsl = templates[name];
+		this.status = "ready";
 		return this;
 	},
 	ready: function(){
 		return (this.status == "ready");
 	},
-	fetch: function(name){
-		var url = "/templates/" + name + ".xsl";
+	fetch: function(type, name){
+		var url = "/static/templates/" + type + "/" + name + ".xsl";
 		var that = this;
 		this.sync.get(url, function(xsl){
 			that.xsl = xsl;
@@ -32,16 +34,17 @@ gereji.extend('xslt', {
 		return this;
 	},
 	transform: function(){
-		this.processor.importStylesheet(this.parse(this.xsl));
-		var model = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];
-		var xml = this.parse(this.json2xml(model));
+		var stylesheet = this.parse(this.xsl);
+		this.processor = Saxon.newXSLT20Processor(stylesheet);
+		var data = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];
+		var xml = this.parse(this.json2xml(data));
 		this.html = this.processor.transformToFragment(xml, document);
 	},
 	getHTML: function(){
 		return this.html;
 	},
-	json2xml: function(model){
-		var xml = this.createXML({model : this.model});
+	json2xml: function(data){
+		var xml = this.createXML(data);
 		xml.unshift('<?xml version="1.0"?>');
 		return xml.join("\n");
 	},
@@ -56,6 +59,9 @@ gereji.extend('xslt', {
         return xml;
 	},
 	parse: function(){
+		return Saxon.parseXML(arguments[0]);
+	},
+	parse2: function(){
 		try{
 			return ((new DOMParser).parseFromString(arguments[0], "application/xml"));
 		}catch(e){

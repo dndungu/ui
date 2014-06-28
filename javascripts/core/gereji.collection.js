@@ -14,8 +14,10 @@ gereji.extend("collection", {
         this.storage = new gereji.storage();
         this.storage.init();
 		var collections = this.storage.get("collections");
-		collections.hasOwnProperty(this.store.meta.name) && (this.store.data = collections[name]);
-		collections.hasOwnProperty(this.store.meta.name) ? (this.status = "ready") : this.fetch(this.store.meta.name);
+		if(!collections.hasOwnProperty(this.store.meta.name))
+			return this.fetch(this.store.meta.name);
+		this.store.data = collections[this.store.meta.name];
+		this.status = "ready";
 		return this;
 	},
 	fetch: function(name){

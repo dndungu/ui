@@ -3,15 +3,45 @@
 	font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
 }
 
-header, main {
-	display:inline-block;
-}
-
-footer {
+header, main{
 	display:inline-block;
 	position:absolute;
+}
+
+header {
+	left:0;
+	top:0;
+	bottom:0;
+}
+
+main {
+	top:0;
 	right:0;
 	bottom:0;
+}
+
+main.primary-mode .primary {
+    width:100%;
+}
+
+main.primary-mode .secondary {
+    width:0;
+}
+
+main.split-mode .primary {
+	width:64%;
+}
+
+main.split-mode .secondary {
+    width:36%;
+}
+
+main.secondary-mode .primary {
+    width:0;
+}
+
+main.secondary-mode .secondary {
+    width:100%;
 }
 
 @media screen and (min-width:48em) {
@@ -20,26 +50,18 @@ footer {
 
 @media screen and (min-width:64em) {
     header {
-        width:16%;
+        right:84%;
     }
     main {
-        width:84%;
-    }
-    footer {
-        width:84%;
-        left:16`%;
+        left:16%;
     }
 }
 
 @media screen and (min-width:72em) {
 	header {
-		width:12%;
+		right:88%;
 	}
 	main {
-		width:88%;
-	}
-	footer {
-		width:88%;
 		left:12%;
 	}
 }
@@ -48,6 +70,11 @@ footer {
 .color-one a {
 	background-color:#282828;
 	color:#b3b3b3;
+	border-color:#282828;
+}
+
+.color-one a:hover {
+	background-color:#202020;
 }
 
 .color-two, 
@@ -122,4 +149,32 @@ main .topbar form i {
 
 main .topbar nav {
 	padding:10px 0 0 0;
+}
+
+.list,
+.list-header,
+.list-buttons,
+.list-body,
+.list-body-row,
+.list-footer {
+	display:block;
+	width:100%;
+}
+
+.list-buttons {
+	padding:16px 0;
+}
+
+.list-header {
+	border-bottom:1px solid #c8c8c8;
+	padding:0 0 8px 0;
+}
+
+.list-body-row {
+	padding:4px 0 2px 0;
+	border-bottom:1px solid #c8c8c8;
+}
+
+.list-body-row:hover {
+	background-color:#fff;
 }

@@ -10,8 +10,12 @@ gereji.apps.register('events', function(sandbox){
 					app.fire.apply(app, arguments);
 				}
 			}
-			document.getElementsByTagName("body")[0].onload = function(){
+			app.body = document.getElementsByTagName("body")[0];
+			app.body.onload = function(){
 				sandbox.emit({type: "body:load", data: arguments[0]});
+			};
+			window.onresize = function(){
+				sandbox.emit({type: "window:resize", data: arguments[0]});
 			};
 		},
 		fire: function(event){

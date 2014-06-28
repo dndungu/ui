@@ -38,8 +38,7 @@ gereji.extend("view", {
 			return this;
 		this.store.template.transform(data);
 		this.store.stage.innerHTML = "";
-		console.log(this.store.template.getHTML());
-//		this.store.stage.appendChild(this.store.template.getHTML());
+		this.store.stage.appendChild(this.store.template.getHTML());
 		return this;
 	}
 });
