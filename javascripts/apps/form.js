@@ -14,8 +14,8 @@ gereji.apps.register('form', function(sandbox){
 			var property = target.getAttribute('property');
 			var form = app.findForm(target);
 			var _id = app.findId(form);
-			var about = form.getAttribute('about');
-			if(!property || !form || arguments[0].data.event.keyCode == 13)
+			var about = form ? form.getAttribute('about') : undefined;
+			if(!about || !property || !form || arguments[0].data.event.keyCode == 13)
 				return;
 			if(!_id || !sandbox.validator.test('uuid', _id))
 				_id = app.createIdInput(form);
@@ -53,7 +53,7 @@ gereji.apps.register('form', function(sandbox){
 			return app.findForm(target.parentNode);
 		},
 		findId: function(target){
-			var inputs = target.getElementsByTagName("input");
+			var inputs = target ? target.getElementsByTagName("input") : [];
 			for(var i=0; i < inputs.length; i++){
 				if(inputs[i].name == '_id')
 					return inputs[i].value;
