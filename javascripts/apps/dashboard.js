@@ -13,10 +13,11 @@ gereji.apps.register("dashboard", function(sandbox){
 			sandbox.on([".dashboard-nav:mousedown"], app.navigate);
 			sandbox.on([".dashboard-nav:mousedown"], app.stage);
 			sandbox.on([".dashboard-nav:click"], app.brake);
+			sandbox.on([".dashboard-add-new:click"], app.toggleMode);
 		},
 		resize: function(){
-			var height = String(app.main.offsetHeight - app.main.getElementsByTagName("section")[0].offsetHeight) + "px";
-			app.primary.style.height = app.secondary.style.height = height;
+			var height = app.main.offsetHeight - app.main.getElementsByTagName("section")[0].offsetHeight;
+			app.main.getElementsByTagName("section")[1].style.height = height + "px";
 		},
 		clear: function(){
 			var target = arguments[0].data.target;
@@ -47,6 +48,12 @@ gereji.apps.register("dashboard", function(sandbox){
 		brake: function(){
 			var event = arguments[0].data.event;
 			event.preventDefault();
+		},
+		toggleMode: function(){
+            var target = arguments[0].data.target;
+            var button = (new gereji.dom()).setElement(target).getElements()[0];
+            var className = button && button.getAttribute("mode") ? button.getAttribute("mode") : "split-mode";
+			(new gereji.dom()).findTag("main").removeClass(["primary-mode", "split-mode", "secondary-mode"]).addClass(className);
 		}
 	}
 });

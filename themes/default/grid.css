@@ -12,14 +12,18 @@
 	min-height: 8px;
 }
 
-[class*=" grid"]:first-child,
-[class^="grid"]:first-child {
-	margin-left: 0;
-}
-
 [class*=" grid"]:last-child,
 [class^="grid"]:last-child {
 	margin-right: 0;
+}
+
+.grid2:nth-child(8),
+.grid2:nth-child(15),
+.grid2:nth-child(22),
+[class*=" grid"]:first-child,
+[class^="grid"]:first-child {
+	margin-left: 0;
+	margin-right:1%;
 }
 
 .grid1 {

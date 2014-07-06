@@ -5,6 +5,7 @@ gereji.apps.register('list', function(sandbox){
         init: function(){
 			app = this;
 			sandbox.on("list:stage", app.stage);
+			sandbox.on("chart:stage", app.stage);
 			sandbox.on(".list-select-all:change", app.select);
 			sandbox.on([".list-select-row:change", ".list-select-all:change"], app.toggleButtons);
 		},
@@ -19,13 +20,13 @@ gereji.apps.register('list', function(sandbox){
 		},
 		select: function(){
 			var target = arguments[0].data.target;
-			var checkboxes = (new gereji.selector()).findTag("input").findClass("list-select-row").getElements();
+			var checkboxes = (new gereji.dom()).findTag("input").findClass("list-select-row").getElements();
 			for(var i = 0; i < checkboxes.length ; i++){
 				checkboxes[i].checked = target.checked;
 			}
 		},
 		toggleButtons: function(){
-			var checkboxes = (new gereji.selector()).findTag("input").findClass("list-select-row").getElements();
+			var checkboxes = (new gereji.dom()).findTag("input").findClass("list-select-row").getElements();
 			for(var i = 0; i < checkboxes.length ; i++){
 				if(checkboxes[i].checked)
 					return app.showButtons();
@@ -58,14 +59,14 @@ gereji.apps.register('list', function(sandbox){
 			app.getButtons().style.display = "none";
 		},
 		positionButtons: function(button){
-			var selectAll = (new gereji.selector()).findTag("input").findClass("list-select-all").getElements()[0];
+			var selectAll = (new gereji.dom()).findTag("input").findClass("list-select-all").getElements()[0];
 			var rect = selectAll.getBoundingClientRect();
-			var width = ((selectAll.parentNode.clientWidth / window.innerWidth) * 100) + 2;
-			button.style.top = String(rect.top - 7) + "px";
+			var width = ((selectAll.parentNode.clientWidth / window.innerWidth) * 100) + 2.8;
+			button.style.top = String(rect.top - 6) + "px";
 			button.style.left = width + "%";
 		},
 		getButtons: function(){
-			return (new gereji.selector()).findTag("select").findClass("bulk-buttons").getElements()[0];
+			return (new gereji.dom()).findTag("select").findClass("bulk-buttons").getElements()[0];
 		}
 	}
 });

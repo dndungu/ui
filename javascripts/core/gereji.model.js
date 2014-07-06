@@ -1,6 +1,7 @@
 "use strict";
 gereji.extend("model", {
 	init: function(){
+		this.status = "ready";
 		this.broker = new gereji.broker();
 		this.broker.init();
 		this.ajax = new gereji.sync();
@@ -8,6 +9,11 @@ gereji.extend("model", {
 		this.store = {data: {}, meta: {}};
 		return this;
 	},
+    ready: function(){
+		if(arguments[0])
+			this.status = arguments[0];
+        return (this.status == "ready");
+    },
 	meta: function(){
 		var key = arguments[0] ? arguments[0] : undefined;
 		var value = arguments[1] ? arguments[1] : undefined;
@@ -47,9 +53,8 @@ gereji.extend("model", {
 		var that = this;
 		this.broker.emit({type: "submit", data: this.store.data});
 		this.ajax.post(url, JSON.stringify(this.store.data), function(){
-			var response = JSON.parse(arguments[0]);
-			that.response = response;
-			that.broker.emit({type: "sync", data: response});
+			that.response = JSON.parse(arguments[0]);
+			that.broker.emit({type: "sync", data: that.response});
 		});
 	},
 	destroy: function(){
@@ -57,5 +62,8 @@ gereji.extend("model", {
 	},
 	serialize: function(){
 		return JSON.stringify(this.store);
+	},
+	find: function(){
+		return this.store.data;
 	}
 });

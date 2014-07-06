@@ -4,6 +4,7 @@ gereji.extend('xslt', {
 		this.status = null;
 		var type = arguments[0];
 		var name = arguments[1];
+		this.key = type + "-" + name;
 		this.broker = new gereji.broker();
 		this.broker.init();
 		this.sync = new gereji.sync();
@@ -11,9 +12,10 @@ gereji.extend('xslt', {
 		this.storage = new gereji.storage();
 		this.storage.init();
 		var templates = this.storage.get("templates");
-		if(!templates.hasOwnProperty(name))
+		this.processor = new XSLTProcessor();
+		if(!templates.hasOwnProperty(this.key))
 			return this.fetch(type, name);
-		this.xsl = templates[name];
+		this.xsl = templates[this.key];
 		this.status = "ready";
 		return this;
 	},
@@ -21,21 +23,21 @@ gereji.extend('xslt', {
 		return (this.status == "ready");
 	},
 	fetch: function(type, name){
-		var url = "/static/templates/" + type + "/" + name + ".xsl";
+		var url = "/static/" + type + "/" + name + ".xsl";
 		var that = this;
 		this.sync.get(url, function(xsl){
 			that.xsl = xsl;
 			that.status = "ready";
 			that.broker.emit({type: "update", data: xsl});
 			var templates = that.storage.get("templates");
-			templates[name] = xsl;
+			templates[that.key] = xsl;
 			that.storage.set("templates", templates);
 		});
 		return this;
 	},
 	transform: function(){
 		var stylesheet = this.parse(this.xsl);
-		this.processor = Saxon.newXSLT20Processor(stylesheet);
+		this.processor.importStylesheet(stylesheet);
 		var data = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];
 		var xml = this.parse(this.json2xml(data));
 		this.html = this.processor.transformToFragment(xml, document);
@@ -58,10 +60,10 @@ gereji.extend('xslt', {
         }
         return xml;
 	},
-	parse: function(){
+	parse2: function(){
 		return Saxon.parseXML(arguments[0]);
 	},
-	parse2: function(){
+	parse: function(){
 		try{
 			return ((new DOMParser).parseFromString(arguments[0], "application/xml"));
 		}catch(e){

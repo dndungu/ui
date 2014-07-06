@@ -4,8 +4,7 @@ gereji.extend("view", {
 		this.store = {
 			data: {},
 			template: {},
-			stage: {},
-			xslt: new gereji.xslt()
+			stage: {}
 		};
 		return this;
 	},

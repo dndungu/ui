@@ -85,6 +85,8 @@ gereji.apps.register('activate', function(sandbox){
         },
         lock: function(){
             var divs = document.querySelectorAll('.wizard-item-content');
+			if(!divs.length)
+				return;
 			var width = String(divs[0].clientWidth) + 'px';
 			var height = String(divs[0].clientHeight) + 'px';
 			for(var i = 0; i < divs.length; i++){

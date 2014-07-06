@@ -18,13 +18,29 @@ main {
 	top:0;
 	right:0;
 	bottom:0;
+	overflow:hidden;
+	padding:0 0 16px 0;
 }
 
-main.primary-mode .primary {
+main .stage {
+	width:100%;
+	display:block;
+	overflow-y:auto;
+}
+
+main .primary,
+main .secondary {
+	display:inline-block;
+	overflow-x:hidden;
+}
+
+main.primary-mode .primary,
+main.secondary-mode .secondary {
     width:100%;
 }
 
-main.primary-mode .secondary {
+main.primary-mode .secondary,
+main.secondary-mode .primary {
     width:0;
 }
 
@@ -36,16 +52,11 @@ main.split-mode .secondary {
     width:36%;
 }
 
-main.secondary-mode .primary {
-    width:0;
-}
-
-main.secondary-mode .secondary {
-    width:100%;
-}
-
 @media screen and (min-width:48em) {
-
+	header {
+	}
+	main {
+	}
 }
 
 @media screen and (min-width:64em) {
@@ -80,6 +91,12 @@ main.secondary-mode .secondary {
 .color-two, 
 .color-two a {
 	background-color:#f0f0f0;
+}
+
+.color-three,
+.color-three a {
+	color:#181818;
+	background-color:#fff;
 }
 
 .topbar {
@@ -162,6 +179,7 @@ main .topbar nav {
 }
 
 .list-titles {
+	border-right:1px solid #c8c8c8;
 	padding:8px 0 4px 0;
 }
 
@@ -171,6 +189,7 @@ main .topbar nav {
 
 .list-body-row {
 	padding:4px 0 2px 0;
+	border-right:1px solid #c8c8c8;
 	border-bottom:1px solid #c8c8c8;
 }
 
@@ -179,11 +198,12 @@ main .topbar nav {
 }
 
 .bulk-buttons {
-	width:96px;
+	width:auto;
 	display:none;
 	position:absolute;
 	border:0 none;
-	background-color:#f0f0f0;
+	background:#0774bb;
+	color:#fff;
 }
 
 .list-tabs {
@@ -197,8 +217,33 @@ main .topbar nav {
 	margin:0 1%;
 	display:inline-block;
 	width:auto;
+	cursor:pointer;
 }
 
 .list-tabs li.open {
 	background-color:#f0f0f0;
+}
+
+.list-tab:last-child {
+	margin:-4px -14px 0 0;
+}
+
+.dashboard-add-new {
+	cursor:move;
+	height:auto;
+	padding:8px 16px 16px;
+	color:#fff;
+	background:#0774bb;
+	border:0 none;
+	position:absolute;
+	right:-48px;
+	bottom:50%;
+	 -ms-transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+}
+
+.split-mode .dashboard-add-new,
+.secondary-mode .dashboard-add-new {
+	display:none;	
 }

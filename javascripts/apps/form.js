@@ -4,33 +4,57 @@ gereji.apps.register('form', function(sandbox){
 	return {
 		init: function(){
 			app = this;
-			sandbox.on(['input:keyup', 'textarea:keyup', 'select:change'], app.save);
+			sandbox.on([".dashboard-add-new:click"], app.add);
+//			sandbox.on(['input:keyup', 'textarea:keyup', 'select:change'], app.save);
 			sandbox.on(['input:change', 'textarea:change', 'select:change'], app.validate);
 			sandbox.on(['form:submit'], app.submit);
 			return this;
 		},
-		save: function(){
-			var target = arguments[0].data.target;
-			var property = target.getAttribute('property');
-			var form = app.findForm(target);
-			var _id = app.findId(form);
-			var about = form ? form.getAttribute('about') : undefined;
-			if(!about || !property || !form || arguments[0].data.event.keyCode == 13)
-				return;
-			if(!_id || !sandbox.validator.test('uuid', _id))
-				_id = app.createIdInput(form);
-			sandbox.models[_id] = sandbox.models.hasOwnProperty(_id) ? sandbox.models[_id] : app.createModel({about: about, form: form, _id : _id});
-			sandbox.models[_id].set(property, target.value);
-			sandbox.models[_id].broker.emit({type: "change", data: {property: target.value}});
+		add: function(){
+			var button = (new gereji.dom()).setElement(arguments[0].data.target).findParentTag("button").getElements()[0];
+			app.stage({
+				_id: (new gereji.storage()).uuid(),
+				name: button.getAttribute("name"),
+				type: button.getAttribute("type"),
+				stage: button.getAttribute("stage"),
+				about: button.getAttribute("about") 
+			});
 		},
-		createModel: function(){
+		stage: function(){
+			var args = arguments[0];
+			var view = (new gereji.view()).init();
+			view.template((new gereji.xslt()).init(args.type, args.name));
+			view.stage(document.getElementById(args.stage));
+			var model = app.model({about: args.about, name: args.name, _id : args._id});
+			view.data(model);
+			view.render();
+			setTimeout(function(){
+				sandbox.emit({type: "body:change", data: {}});
+			}, 1200);
+		},
+//		save: function(){
+//			var target = arguments[0].data.target;
+//			var property = target.getAttribute('property');
+//			var form = (new gereji.dom()).setElement(target).findParentTag("form").getElements()[0];
+//			var _id = form ? app.findId(form) : undefined;
+//			var about = form ? form.getAttribute('about') : undefined;
+//			if(!about || !property || !form || arguments[0].data.event.keyCode == 13)
+//				return;
+//			if(!_id || !sandbox.validator.test('uuid', _id))
+//				_id = app.createIdInput(form);
+//			var name = form.getAttribute("name");
+//			sandbox.models[_id] = sandbox.models.hasOwnProperty(_id) ? sandbox.models[_id] : app.model({about: about, name: name, _id : _id});
+//			sandbox.models[_id].set(property, target.value);
+//			sandbox.models[_id].broker.emit({type: "change", data: {property: target.value}});
+//		},
+		model: function(){
 			var args = arguments[0];
 			var model = (new gereji.model());
 			model.init();
 			model.meta("about", args.about);
-			model.meta("name", args.form.getAttribute("name"));
+			model.meta("name", args.name);
 			model.set("_id", args._id);
-			var type = "model." + args.form.name + ":create";
+			var type = "model." + args.name + ":create";
 			sandbox.emit({type: type, data: model});
 			return model;
 		},
@@ -44,16 +68,8 @@ gereji.apps.register('form', function(sandbox){
 			form.appendChild(input);
 			return _id;
 		},
-		findForm: function(target){
-			var tag = target.tagName.toLowerCase();
-			if(tag == 'form')
-				return target;
-			if(tag == 'body')
-				return null;
-			return app.findForm(target.parentNode);
-		},
 		findId: function(target){
-			var inputs = target ? target.getElementsByTagName("input") : [];
+			var inputs = target.getElementsByTagName("input");
 			for(var i=0; i < inputs.length; i++){
 				if(inputs[i].name == '_id')
 					return inputs[i].value;
@@ -67,7 +83,7 @@ gereji.apps.register('form', function(sandbox){
 				return;
 			var _id = app.findId(target);
 			arguments[0].data.event.preventDefault();
-			var model =  sandbox.models[_id] ? sandbox.models[_id] : app.createModel({about: about, form: target, _id : _id});
+			var model =  sandbox.models[_id] ? sandbox.models[_id] : app.model({about: about, form: target, _id : _id});
 			if(!(app.parse("input", target, model) && app.parse("textarea", target, model) && app.parse("select", target, model)))
 				return;
 			model.sync();
@@ -88,11 +104,11 @@ gereji.apps.register('form', function(sandbox){
 			var tagName = target.tagName.toLowerCase();
 			var value = target.value;
 			var cls = target.className.split(' ');
-			app.removeClass(['invalid-input', 'valid-input'], target);
+			(new gereji.dom()).setElement(target).removeClass('invalid-input');
 			var valid = true;
 			for(var i in cls){
 				var test = sandbox.validator.test(cls[i], value);
-				app.addClass((test ? " valid-input" : " invalid-input"), target);
+				test || (new gereji.dom()).setElement(target).addClass(" invalid-input");
 				if(test)
 					continue;
 				target.value = "";
@@ -100,19 +116,6 @@ gereji.apps.register('form', function(sandbox){
 					valid = false;
 			}
 			return valid;
-		},
-		addClass: function(cls, target){
-			cls = cls instanceof Array ? cls : [cls];
-			for(var i in cls){
-				var cl = cls[i];
-				target.className = (target.className.indexOf(cl) == -1) ? (target.className + " " + cl) : target.className;
-			}
-		},
-		removeClass: function(cls, target){
-			cls = cls instanceof Array ? cls : [cls];
-			for(var i in cls){
-				target.className = target.className.replace(cls[i], "").replace("  ", " ");
-			}
 		}
 	};
 });

@@ -39,6 +39,7 @@ gereji.extend('os', {
 		for (var i in this.apps) {
 			this.apps.hasOwnProperty(i) && this.start(i);
 		}
+		this.sandbox.emit({type: "body:load", data: {}});
 	},
 	halt : function() {
 		for ( var i in this.apps) {

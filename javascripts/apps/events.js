@@ -10,10 +10,6 @@ gereji.apps.register('events', function(sandbox){
 					app.fire.apply(app, arguments);
 				}
 			}
-			app.body = document.getElementsByTagName("body")[0];
-			app.body.onload = function(){
-				sandbox.emit({type: "body:load", data: arguments[0]});
-			};
 			window.onresize = function(){
 				sandbox.emit({type: "window:resize", data: arguments[0]});
 			};
@@ -21,13 +17,16 @@ gereji.apps.register('events', function(sandbox){
 		fire: function(event){
 			event = event || window.event;
 			var target = event.target || event.srcElement;
+			if(target.className.indexOf("bubble-up") != -1)
+				return target.parentNode[event.type] && target.parentNode[event.type]();
 			var cls = target.className.split(' ');
 			var tagName = target.tagName.toLowerCase();
 			var data = {target: target, event: event};
 			sandbox.emit({type: tagName + ':' + event.type, data: data});
 			target.id && sandbox.emit({type: '#' + target.id + ':' + event.type, data: data});
 			for(var i in cls){
-				sandbox.emit({type: '.' + cls[i] + ':' + event.type, data: data});
+				var type = '.' + cls[i] + ':' + event.type;
+				sandbox.emit({type: type, data: data});
 			}
 		},
 		events: [

@@ -37,3 +37,7 @@ ul>li,
 ol>li {
 	font-size: .875em;
 }
+
+small {
+	font-size:.75em;
+}
