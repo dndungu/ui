@@ -5,7 +5,7 @@ gereji.apps.register("dashboard", function(sandbox){
 		init: function(){
 			app = this;
 			if(!(new gereji.dom()).findTag("body").hasClass("dashboard"))
-				gereji.apps.stop("dashboard");
+				return gereji.apps.stop("dashboard");
 			app.header = document.getElementsByTagName("header")[0];
 			app.main = document.getElementsByTagName("main")[0];
 			app.primary = document.getElementById("primary");

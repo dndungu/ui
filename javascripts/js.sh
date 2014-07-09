@@ -2,7 +2,7 @@
 
 ROOT=`pwd`
 
-JS=$ROOT"/gereji-0.0.2.js"
+JS=$ROOT"/gereji-0.0.3.js"
 cp -f $ROOT"/core/gereji.js" $JS
 cat $ROOT"/core/gereji.broker.js" >> $JS
 cat $ROOT"/core/gereji.sync.js" >> $JS
