@@ -4,6 +4,8 @@ gereji.apps.register("dashboard", function(sandbox){
 	return {
 		init: function(){
 			app = this;
+			if(!(new gereji.dom()).findTag("body").hasClass("dashboard"))
+				gereji.apps.stop("dashboard");
 			app.header = document.getElementsByTagName("header")[0];
 			app.main = document.getElementsByTagName("main")[0];
 			app.primary = document.getElementById("primary");
@@ -14,6 +16,8 @@ gereji.apps.register("dashboard", function(sandbox){
 			sandbox.on([".dashboard-nav:mousedown"], app.stage);
 			sandbox.on([".dashboard-nav:click"], app.brake);
 			sandbox.on([".dashboard-add-new:click"], app.toggleMode);
+		},
+		kill: function(){
 		},
 		resize: function(){
 			var height = app.main.offsetHeight - app.main.getElementsByTagName("section")[0].offsetHeight;
