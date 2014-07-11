@@ -3,6 +3,7 @@ gereji.apps.register('layout', function(sandbox){
 	return {
 		init: function(){
 			sandbox.on(["body:load"], this.vertical);
+			sandbox.on(["body:load", "body:change"], this.lock);
 		},
 		vertical: function(){
 			var main = (new gereji.dom()).findTag("main").findClass("fill-vertical");
@@ -15,6 +16,18 @@ gereji.apps.register('layout', function(sandbox){
 			var space = window.innerHeight - headerHeight - footerHeight - main.getElements()[0].offsetHeight;
 			var padding = String(Math.floor(space / 2.4)) + "px 0 " + String(Math.floor(space / 1.6) - 16) + "px";
 			main.css({padding: padding});
+		},
+		lock: function(){
+			var items = (new gereji.dom()).findTag("*").findClass("lock-height").getElements();
+			for(var i = 0; i < items.length; i++){
+				if(items[i].clientHeight)
+					items[i].style.height = items[i].clientHeight + "px";
+			}
+            items = (new gereji.dom()).findTag("*").findClass("lock-width").getElements();
+            for(var i = 0; i < items.length; i++){
+				if(items[i].clientWidth)
+	                items[i].style.width = items[i].clientWidth + "px";
+            }
 		}
 	};
 });

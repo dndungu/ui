@@ -5,7 +5,6 @@ gereji.apps.register('form', function(sandbox){
 		init: function(){
 			app = this;
 			sandbox.on([".dashboard-add-new:click"], app.add);
-//			sandbox.on(['input:keyup', 'textarea:keyup', 'select:change'], app.save);
 			sandbox.on(['input:change', 'textarea:change', 'select:change'], app.validate);
 			sandbox.on(['form:submit'], app.submit);
 			return this;
@@ -32,21 +31,6 @@ gereji.apps.register('form', function(sandbox){
 				sandbox.emit({type: "body:change", data: {}});
 			}, 1200);
 		},
-//		save: function(){
-//			var target = arguments[0].data.target;
-//			var property = target.getAttribute('property');
-//			var form = (new gereji.dom()).setElement(target).findParentTag("form").getElements()[0];
-//			var _id = form ? app.findId(form) : undefined;
-//			var about = form ? form.getAttribute('about') : undefined;
-//			if(!about || !property || !form || arguments[0].data.event.keyCode == 13)
-//				return;
-//			if(!_id || !sandbox.validator.test('uuid', _id))
-//				_id = app.createIdInput(form);
-//			var name = form.getAttribute("name");
-//			sandbox.models[_id] = sandbox.models.hasOwnProperty(_id) ? sandbox.models[_id] : app.model({about: about, name: name, _id : _id});
-//			sandbox.models[_id].set(property, target.value);
-//			sandbox.models[_id].broker.emit({type: "change", data: {property: target.value}});
-//		},
 		model: function(){
 			var args = arguments[0];
 			var model = (new gereji.model());
@@ -78,24 +62,33 @@ gereji.apps.register('form', function(sandbox){
 		},
 		submit: function(){
 			var target = arguments[0].data.target;
+			var event = arguments[0].data.event;
 			var about = target.getAttribute('about');
 			if(!about)
-				return;
+				return this;
+			event.preventDefault();
 			var _id = app.findId(target);
-			arguments[0].data.event.preventDefault();
-			var model =  sandbox.models[_id] ? sandbox.models[_id] : app.model({about: about, form: target, _id : _id});
-			if(!(app.parse("input", target, model) && app.parse("textarea", target, model) && app.parse("select", target, model)))
-				return;
+			var name = target.getAttribute("name");
+			var model = sandbox.models[_id];
+			if(!_id)
+				app.createIdInput(target);
+			if(!model)
+				model = app.model({about: about, form: target, _id : _id, name: name});
+			if(!app.parse(["input", "textarea", "select"], target, model))
+				return this;
 			model.sync();
 			return this;
 		},
-		parse: function(tagName, target, model){
-			var elements = target.getElementsByTagName(tagName);
-			for(var i = 0; i < elements.length; i++){
-				if(!app.validate({data: {target : elements[i]}}))
-					return false;
-				var property = elements[i].getAttribute("property");
-				property && model.set(property, elements[i].value);
+		parse: function(tags, target, model){
+			for(var i in tags){
+				var tagName = tags[i];
+				var elements = target.getElementsByTagName(tagName);
+				for(var i = 0; i < elements.length; i++){
+					if(!app.validate({data: {target : elements[i]}}))
+						return false;
+					var property = elements[i].getAttribute("property");
+					property && model.set(property, elements[i].value);
+				}
 			}
 			return true;
 		},

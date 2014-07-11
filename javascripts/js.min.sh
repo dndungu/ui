@@ -2,8 +2,8 @@
 
 JAR=/usr/local/jar/yuicompressor-2.4.8.jar
 ROOT=`pwd`
-JS=$ROOT"/gereji-0.0.3.js"
-JSMIN=$ROOT"/gereji.min-0.0.3.js"
+JS=$ROOT"/gereji-0.0.4.js"
+JSMIN=$ROOT"/gereji.min-0.0.4.js"
 
 java -jar $JAR $JS > $JSMIN
 
