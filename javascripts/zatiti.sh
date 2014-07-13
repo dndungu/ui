@@ -2,7 +2,7 @@
 
 ROOT=`pwd`
 
-JS=$ROOT"/src/main-0.0.1.js"
+JS=$ROOT"/src/zatiti-0.0.1.js"
 cp -f $ROOT"/core/gereji.js" $JS
 cat $ROOT"/core/gereji.broker.js" >> $JS
 cat $ROOT"/core/gereji.sync.js" >> $JS
@@ -18,7 +18,9 @@ cat $ROOT"/core/gereji.os.js" >> $JS
 cat $ROOT"/apps/events.js" >> $JS
 cat $ROOT"/apps/form.js" >> $JS
 cat $ROOT"/apps/layout.js" >> $JS
+cat $ROOT"/apps/dashboard.js" >> $JS
 cat $ROOT"/apps/collapsible.js" >> $JS
 cat $ROOT"/apps/draggable.js" >> $JS
+cat $ROOT"/apps/zatiti-activate-b.js" >> $JS
 
 chmod "755" $JS

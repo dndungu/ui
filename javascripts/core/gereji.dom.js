@@ -62,6 +62,11 @@ gereji.extend("dom", {
 		this.elements = [this.elements[0].parentNode];
 		return this.findParentTag(parentTag);
 	},
+	findChildrenTag: function(tag){
+		var elements = this.elements[0].getElementsByTagName(tag);
+		this.elements = elements ? elements : [];
+		return this;
+	},
     findNextSibling: function(){
 		var target = this.elements[0];
         var subject = target.nextSibling ? target.nextSibling : target.parentNode.firstChild;

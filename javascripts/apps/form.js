@@ -7,6 +7,7 @@ gereji.apps.register('form', function(sandbox){
 			sandbox.on([".dashboard-add-new:click"], app.add);
 			sandbox.on(['input:change', 'textarea:change', 'select:change'], app.validate);
 			sandbox.on(['form:submit'], app.submit);
+			sandbox.on([".select-add:change"], app.selectAdd);
 			return this;
 		},
 		add: function(){
@@ -109,6 +110,18 @@ gereji.apps.register('form', function(sandbox){
 					valid = false;
 			}
 			return valid;
+		},
+		selectAdd: function(){
+			var target = arguments[0].data.target;
+			var input = document.createElement("input");
+			input.setAttribute("type", "text");
+			input.setAttribute("size", "32");
+			input.setAttribute("style", "width:auto;");
+			input.setAttribute("name", target.getAttribute("name"));
+			input.setAttribute("about", target.getAttribute("about"));
+			target.parentNode.insertBefore(input,target);
+			target.remove();
+			input.focus();
 		}
 	};
 });

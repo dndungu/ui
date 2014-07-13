@@ -4,36 +4,21 @@ gereji.apps.register('list', function(sandbox){
     return {
         init: function(){
 			app = this;
-			sandbox.on("list:stage", app.stage);
-			sandbox.on("chart:stage", app.stage);
-			sandbox.on(".list-select-all:change", app.select);
-			sandbox.on([".list-select-row:change", ".list-select-all:change"], app.toggleButtons);
+			sandbox.on(["list:stage", "chart:stage"], app.stage);
+			sandbox.on([".list-select-all:change", ".list-select-row:change"], app.toggleButtons);
+			sandbox.on([".list-select-all:change"], app.toggleSelectors);
+			sandbox.on([".list-select-row:change"], app.toggleBulkSelector);
 		},
 		stage: function(){
 			var args = arguments[0].data;
 			var name = args.name;
 			var view = args.type + "-" + name;
-			sandbox.collections[name] = sandbox.collections.hasOwnProperty(name) ? sandbox.collections[name] : app.collection(args);
+			sandbox.collections[name] = sandbox.collections.hasOwnProperty(name) ? sandbox.collections[name] : app.createCollection(args);
 			args.collection = sandbox.collections[name];
-			sandbox.views[view] = sandbox.views[view] ? sandbox.views[view] : app.view(args);
+			sandbox.views[view] = sandbox.views[view] ? sandbox.views[view] : app.createView(args);
 			sandbox.views[view].render();
 		},
-		select: function(){
-			var target = arguments[0].data.target;
-			var checkboxes = (new gereji.dom()).findTag("input").findClass("list-select-row").getElements();
-			for(var i = 0; i < checkboxes.length ; i++){
-				checkboxes[i].checked = target.checked;
-			}
-		},
-		toggleButtons: function(){
-			var checkboxes = (new gereji.dom()).findTag("input").findClass("list-select-row").getElements();
-			for(var i = 0; i < checkboxes.length ; i++){
-				if(checkboxes[i].checked)
-					return app.showButtons();
-			}
-			app.hideButtons();
-		},
-		view: function(){
+		createView: function(){
 			var args = arguments[0];
 			var view = new gereji.view();
 			view.init();
@@ -44,29 +29,49 @@ gereji.apps.register('list', function(sandbox){
 			view.template(xslt);
 			return view;
 		},
-		collection: function(){
+		createCollection: function(){
 			var args = arguments[0];
 			var collection = new gereji.collection();
 			collection.init({meta: {name: args.name, about: args.about}});
 			return collection;
 		},
-		showButtons: function(){
-			var button = app.getButtons();
-			app.positionButtons(button);
-			button.style.display = "block";
+		toggleSelectors: function(){
+			var target = arguments[0].data.target;
+			var checkboxes = app.getSelectors(target);
+			for(var i = 0; i < checkboxes.length ; i++){
+				checkboxes[i].checked = target.checked;
+			}
 		},
-		hideButtons: function(){
-			app.getButtons().style.display = "none";
+		toggleBulkSelector: function(){
+			var target = arguments[0].data.target;
+			var checkboxes = app.getSelectors(target);
+			var n = 0;
+			for(var i = 0; i < checkboxes.length ; i++){
+				if(checkboxes[i].checked)
+					n++;
+			}
+			app.getBulkSelector(target).checked = !!n;
 		},
-		positionButtons: function(button){
-			var selectAll = (new gereji.dom()).findTag("input").findClass("list-select-all").getElements()[0];
-			var rect = selectAll.getBoundingClientRect();
-			var width = ((selectAll.parentNode.clientWidth / window.innerWidth) * 100) + 2.8;
-			button.style.top = String(rect.top - 6) + "px";
-			button.style.left = width + "%";
+		toggleButtons: function(){
+			var target = arguments[0].data.target;
+			setTimeout(function(){
+				var button = (new gereji.dom()).setElement(target).findParentTag("section").findChildrenTag("select").findClass("bulk-buttons").getElements()[0];
+				if(!button)
+					return this;
+				var checkboxes = app.getSelectors(target);
+				for(var i = 0; i < checkboxes.length ; i++){
+					if(checkboxes[i].checked)
+						return button.style.display = "block";
+				}
+				button.style.display = "none";
+			}, 600);
+			return this;
 		},
-		getButtons: function(){
-			return (new gereji.dom()).findTag("select").findClass("bulk-buttons").getElements()[0];
+		getSelectors: function(target){
+			return (new gereji.dom()).setElement(target).findParentTag("section").findChildrenTag("input").findClass("list-select-row").getElements();
+		},
+		getBulkSelector: function(target){
+			return (new gereji.dom()).setElement(target).findParentTag("section").findChildrenTag("input").findClass("list-select-all").getElements()[0];
 		}
 	}
 });

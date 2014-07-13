@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ROOT=`pwd`
-CSS=$ROOT"/default-0.0.2.css"
+CSS=$ROOT"/default-0.0.3.css"
 
 cp -f $ROOT"/common.css" $CSS
 
