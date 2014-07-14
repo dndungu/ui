@@ -2,7 +2,7 @@
 
 ROOT=`pwd`
 
-JS=$ROOT"/src/main-0.0.2.js"
+JS=$ROOT"/src/dashboard-0.0.1.js"
 cp -f $ROOT"/core/gereji.js" $JS
 cat $ROOT"/core/gereji.broker.js" >> $JS
 cat $ROOT"/core/gereji.sync.js" >> $JS
@@ -20,5 +20,6 @@ cat $ROOT"/apps/form.js" >> $JS
 cat $ROOT"/apps/layout.js" >> $JS
 cat $ROOT"/apps/collapsible.js" >> $JS
 cat $ROOT"/apps/draggable.js" >> $JS
+cat $ROOT"/apps/dashboard.js" >> $JS
 
 chmod "755" $JS
