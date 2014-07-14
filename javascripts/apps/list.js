@@ -22,7 +22,7 @@ gereji.apps.register('list', function(sandbox){
 			var args = arguments[0];
 			var view = new gereji.view();
 			view.init();
-			view.stage(document.getElementById(args.target));
+			view.stage(document.getElementById(args.stage));
 			view.data(args.collection);
 			var xslt = new gereji.xslt();
 			xslt.init(args.type, args.name);

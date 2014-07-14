@@ -43,7 +43,7 @@ gereji.apps.register("dashboard", function(sandbox){
             data.href = target.getAttribute("href");
             data.about = target.getAttribute("about");
             data.name = target.getAttribute("name");
-            data.target = target.getAttribute("target");
+            data.stage = target.getAttribute("stage");
             if(data.href && data.about && data.name)
                 sandbox.emit({type: (data.type + ":stage"), data: data});
 		},
