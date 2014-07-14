@@ -17,9 +17,9 @@ gereji.apps.register('events', function(sandbox){
 		fire: function(event){
 			event = event || window.event;
 			var target = event.target || event.srcElement;
-			if(target.className && target.className.indexOf("bubble-up") != -1)
+			if(String(target.className).indexOf("bubble-up") != -1)
 				return target.parentNode[event.type] && target.parentNode[event.type]();
-			var cls = target.className.split(' ');
+			var cls = String(target.className).split(' ');
 			var tagName = target.tagName.toLowerCase();
 			var data = {target: target, event: event};
 			sandbox.emit({type: tagName + ':' + event.type, data: data});
