@@ -4,36 +4,43 @@ gereji.apps.register('list', function(sandbox){
     return {
         init: function(){
 			app = this;
-			sandbox.on(["list:stage", "chart:stage"], app.stage);
+			app.views = {};
+			app.stage = {};
+			sandbox.on([".list-items:click"], app.render);
 			sandbox.on([".list-select-all:change", ".list-select-row:change"], app.toggleButtons);
 			sandbox.on([".list-select-all:change"], app.toggleSelectors);
 			sandbox.on([".list-select-row:change"], app.toggleBulkSelector);
+			sandbox.on([".list-body-row:click", ".list-select-row:click"], app.renderEdit);
 		},
-		stage: function(){
-			var args = arguments[0].data;
-			var name = args.name;
-			var view = args.type + "-" + name;
-			sandbox.collections[name] = sandbox.collections.hasOwnProperty(name) ? sandbox.collections[name] : app.createCollection(args);
-			args.collection = sandbox.collections[name];
-			sandbox.views[view] = sandbox.views[view] ? sandbox.views[view] : app.createView(args);
-			sandbox.views[view].render();
-		},
-		createView: function(){
-			var args = arguments[0];
-			var view = new gereji.view();
-			view.init();
-			view.stage(document.getElementById(args.stage));
-			view.data(args.collection);
-			var xslt = new gereji.xslt();
-			xslt.init(args.type, args.name);
-			view.template(xslt);
-			return view;
-		},
-		createCollection: function(){
-			var args = arguments[0];
-			var collection = new gereji.collection();
-			collection.init({meta: {name: args.name, about: args.about}});
-			return collection;
+        render: function(){
+            var options = {};
+			var target = arguments[0].data.target;
+			options.sandbox = sandbox;
+            options.type = target.getAttribute("type");
+            options.about = target.getAttribute("about");
+            options.name = target.getAttribute("name");
+            options.stage = target.getAttribute("stage");
+            if(!options.type || !options.name)
+				return;
+			if(!app.views.hasOwnProperty(options.name))
+				app.views[options.name] = (new gereji.view[options.type]()).init(options);
+			app.views[options.name].render();
+			app.stage[options.stage] = app.views[options.name];
+        },
+		toggleButtons: function(){
+			var target = arguments[0].data.target;
+			setTimeout(function(){
+				var button = (new gereji.dom()).setElement(target).findParentTag("section").findChildrenTag("select").findClass("bulk-buttons").getElements()[0];
+				if(!button)
+					return this;
+				var checkboxes = app.getSelectors(target);
+				for(var i = 0; i < checkboxes.length ; i++){
+					if(checkboxes[i].checked)
+						return button.style.display = "block";
+				}
+				button.style.display = "none";
+			}, 100);
+			return this;
 		},
 		toggleSelectors: function(){
 			var target = arguments[0].data.target;
@@ -52,20 +59,18 @@ gereji.apps.register('list', function(sandbox){
 			}
 			app.getBulkSelector(target).checked = !!n;
 		},
-		toggleButtons: function(){
+		renderEdit: function(){
 			var target = arguments[0].data.target;
-			setTimeout(function(){
-				var button = (new gereji.dom()).setElement(target).findParentTag("section").findChildrenTag("select").findClass("bulk-buttons").getElements()[0];
-				if(!button)
-					return this;
-				var checkboxes = app.getSelectors(target);
-				for(var i = 0; i < checkboxes.length ; i++){
-					if(checkboxes[i].checked)
-						return button.style.display = "block";
-				}
-				button.style.display = "none";
-			}, 600);
-			return this;
+			var stage_id = (new gereji.dom()).setElement(target).findParentTag("section").getElements()[0].id;
+			var options = new Object(app.stage[stage_id].options);
+			options.stage = "secondary";
+			options.type = "form";
+			var _id = target.getAttribute("_id");
+			var record = app.stage[stage_id].store.source.filter({_id : _id});
+			if(record.length)
+				options.data = {generic: {rest : [record]}};
+			var view = (new gereji.view.form()).init(options)
+			view.render();
 		},
 		getSelectors: function(target){
 			return (new gereji.dom()).setElement(target).findParentTag("section").findChildrenTag("input").findClass("list-select-row").getElements();

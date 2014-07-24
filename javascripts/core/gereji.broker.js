@@ -21,7 +21,7 @@ gereji.extend('broker', {
 				typeof listeners[i] === 'function' && listeners[i](_event);
 			}
 		}catch(e){
-			console && console.error(e);
+			console && console.error(e.stack);
 		}
 	}
 });

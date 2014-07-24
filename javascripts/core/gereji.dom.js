@@ -63,6 +63,10 @@ gereji.extend("dom", {
 		return this.findParentTag(parentTag);
 	},
 	findChildrenTag: function(tag){
+		if(!this.elements.length){
+			this.elements = [];
+			return this;
+		}
 		var elements = this.elements[0].getElementsByTagName(tag);
 		this.elements = elements ? elements : [];
 		return this;
@@ -71,18 +75,39 @@ gereji.extend("dom", {
 		var target = this.elements[0];
         var subject = target.nextSibling ? target.nextSibling : target.parentNode.firstChild;
         while(subject.nodeType != 1){
-            this.elements[0] = subject.nextSibling ? subject.nextSibling : target.parentNode.firstChild;
+			subject = subject.nextSibling ? subject.nextSibling : target.parentNode.firstChild;
         }
+		this.elements = [subject];
         return this;
     },
     findPreviousSibling: function(){
 		var target = this.elements[0];
         var subject = target.previousSibling ? target.previousSibling : target.parentNode.lastChild;
         while(subject.nodeType != 1){
-           this.elements[0] = subject.previousSibling ? subject.previousSibling : target.parentNode.lastChild;
+           subject = subject.previousSibling ? subject.previousSibling : target.parentNode.lastChild;
         }
+		this.elements = [subject];
         return this;
     },
+	append: function(){
+		if(!this.elements.length)
+			return this;
+		this.elements[0].innerHTML += arguments[0];
+	},
+	html: function(){
+        if(!this.elements.length)
+            return this;
+		this.elements[0].innerHTML = "";
+        this.elements[0].appendChild(arguments[0]);		
+	},
+	value: function(){
+		if(!arguments.length)
+			return this.elements[0].value;
+		for(var i = 0; i < this.elements.length; i++){
+			this.elements[i].value = arguments[0];
+		}
+		return this;
+	},
 	attribute: function(){
 		if(arguments.length == 1)
 			return this.elements[0].getAttribute(arguments[0]);
@@ -97,6 +122,12 @@ gereji.extend("dom", {
 				this.elements[i].style[j] = css[j];
 			}
 		}
+		return this;
+	},
+	remove: function(){
+        if(!this.elements.length)
+            return this;
+		this.elements[0].parentNode.removeChild(this.elements[0]);		
 		return this;
 	}
 });

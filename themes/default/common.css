@@ -31,6 +31,18 @@
     text-align:justify;
 }
 
+.capitalize {
+	text-transform:capitalize;
+}
+
+.lowercase {
+	text-transform:lowercase;
+}
+
+.uppercase {
+	text-transform:uppercase;
+}
+
 .clearfix:after {
 	content: "";
 	display: table;

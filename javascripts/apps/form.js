@@ -4,44 +4,32 @@ gereji.apps.register('form', function(sandbox){
 	return {
 		init: function(){
 			app = this;
-			sandbox.on([".dashboard-add-new:click"], app.add);
+			app.views = {};
+			sandbox.on([".add-item:click"], app.render);
 			sandbox.on(['input:change', 'textarea:change', 'select:change'], app.validate);
 			sandbox.on(['form:submit'], app.submit);
 			sandbox.on([".select-add:change"], app.selectAdd);
 			return this;
 		},
-		add: function(){
-			var button = (new gereji.dom()).setElement(arguments[0].data.target).findParentTag("button").getElements()[0];
-			app.stage({
-				_id: (new gereji.storage()).uuid(),
-				name: button.getAttribute("name"),
-				type: button.getAttribute("type"),
-				stage: button.getAttribute("stage"),
-				about: button.getAttribute("about") 
-			});
-		},
-		stage: function(){
-			var args = arguments[0];
-			var view = (new gereji.view()).init();
-			view.template((new gereji.xslt()).init(args.type, args.name));
-			view.stage(document.getElementById(args.stage));
-			var model = app.model({about: args.about, name: args.name, _id : args._id});
-			view.data(model);
-			view.render();
-			setTimeout(function(){
-				sandbox.emit({type: "body:change", data: {}});
-			}, 1200);
-		},
-		model: function(){
-			var args = arguments[0];
-			var model = (new gereji.model());
-			model.init();
-			model.meta("about", args.about);
-			model.meta("name", args.name);
-			model.set("_id", args._id);
-			var type = "model." + args.name + ":create";
-			sandbox.emit({type: type, data: model});
-			return model;
+        render: function(){
+            var options = {};
+			var target = arguments[0].data.target;
+			options.sandbox = sandbox;
+			options._id = target.getAttribute("_id");
+			options.type = "form";
+            options.about = target.getAttribute("about");
+            options.name = target.getAttribute("name");
+            options.stage = target.getAttribute("stage");
+            if(!options.about || !options.name)
+                return;
+            app.findOrCreate(options).render();
+        },
+		findOrCreate: function(options){
+			if(!options._id)
+				options._id = ((new gereji.storage()).uuid());
+			if(!app.views[options._id])
+                app.views[options._id] = (new gereji.view.form()).init(options);
+			return app.views[options._id];
 		},
 		createIdInput: function(form){
 			var _id = (new gereji.storage()).uuid();
@@ -54,27 +42,30 @@ gereji.apps.register('form', function(sandbox){
 			return _id;
 		},
 		findId: function(target){
-			var inputs = target.getElementsByTagName("input");
-			for(var i=0; i < inputs.length; i++){
-				if(inputs[i].name == '_id')
-					return inputs[i].value;
+			var elements = (new gereji.dom()).setElement(target).findTag("*");
+			for(var i = 0; i < elements.length; i++){
+				if(elements[i].name == "_id")
+					return elements[i].value;
 			}
 			return undefined;
 		},
 		submit: function(){
 			var target = arguments[0].data.target;
-			var event = arguments[0].data.event;
-			var about = target.getAttribute('about');
-			if(!about)
+			var options = {};
+			options.type = "form";
+			options.about = target.getAttribute('about');
+			options.name = target.getAttribute("name");
+			if(!options.about || !options.name)
 				return this;
-			event.preventDefault();
-			var _id = app.findId(target);
-			var name = target.getAttribute("name");
-			var model = sandbox.models[_id];
-			if(!_id)
-				app.createIdInput(target);
+			arguments[0].data.event.preventDefault();
+			options._id = app.findId(target);
+			if(!options._id)
+				options._id = app.createIdInput(target);
+			var model;
+			if(app.views[options._id])
+				model = app.views[options._id].getModel();
 			if(!model)
-				model = app.model({about: about, form: target, _id : _id, name: name});
+				 model = (new gereji.model()).init().meta("about", options.about).meta("name", options.name);
 			if(!app.parse(["input", "textarea", "select"], target, model))
 				return this;
 			model.sync();
@@ -113,10 +104,12 @@ gereji.apps.register('form', function(sandbox){
 		},
 		selectAdd: function(){
 			var target = arguments[0].data.target;
+			if(target.value != "add-new")
+				return;
 			var input = document.createElement("input");
 			input.setAttribute("type", "text");
 			input.setAttribute("size", "32");
-			input.setAttribute("style", "width:auto;");
+			input.setAttribute("style", "width:100%;");
 			input.setAttribute("name", target.getAttribute("name"));
 			input.setAttribute("about", target.getAttribute("about"));
 			target.parentNode.insertBefore(input,target);

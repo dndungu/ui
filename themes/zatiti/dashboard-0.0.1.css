@@ -44,6 +44,13 @@ main.secondary-mode .primary {
     width:0;
 }
 
+main.primary-mode .secondary>div,
+main.secondary-mode .primary>div,
+main.primary-mode .secondary>form,
+main.secondary-mode .primary>form {
+	max-height:15em;
+}
+
 main.split-mode .primary {
 	width:64%;
 }
@@ -78,6 +85,7 @@ main.split-mode .secondary {
 }
 
 .color-one,
+a.color-one,
 .color-one a {
 	background-color:#282828;
 	color:#b3b3b3;
@@ -89,14 +97,23 @@ main.split-mode .secondary {
 }
 
 .color-two, 
+a.color-two,
 .color-two a {
 	background-color:#f0f0f0;
 }
 
 .color-three,
+a.color-three,
 .color-three a {
 	color:#181818;
 	background-color:#fff;
+}
+
+.color-four,
+a.color-four,
+.color-four a {
+	color:#fff;
+	background:#0774bb;
 }
 
 .topbar {
@@ -189,6 +206,7 @@ main .topbar nav {
 
 .list-body-row {
 	padding:4px 0 2px 0;
+	border-left:1px solid #c8c8c8;
 	border-right:1px solid #c8c8c8;
 	border-bottom:1px solid #c8c8c8;
 }
@@ -200,10 +218,11 @@ main .topbar nav {
 .bulk-buttons {
 	width:auto;
 	display:none;
-	background:#0774bb;
 	color:#fff;
-	margin:-64px 0 0 8px;
-	padding:8px 0;
+	margin:-60px 0 0 4px;
+	padding:6px 0;
+	border:0 none;
+	border-radius:0;
 }
 
 .list-tabs {
@@ -232,8 +251,6 @@ main .topbar nav {
 	cursor:move;
 	height:auto;
 	padding:8px 16px 16px;
-	color:#fff;
-	background:#0774bb;
 	border:0 none;
 	position:absolute;
 	right:-48px;

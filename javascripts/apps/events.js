@@ -17,17 +17,27 @@ gereji.apps.register('events', function(sandbox){
 		fire: function(event){
 			event = event || window.event;
 			var target = event.target || event.srcElement;
-			if(String(target.className).indexOf("bubble-up") != -1)
-				return target.parentNode[event.type] && target.parentNode[event.type]();
+			if(app.bubble(target, event))
+				return;
+			var ev = { data: {} };
+			ev.data.target = target;
+			ev.data.event = event;
 			var cls = String(target.className).split(' ');
-			var tagName = target.tagName.toLowerCase();
-			var data = {target: target, event: event};
-			sandbox.emit({type: tagName + ':' + event.type, data: data});
-			target.id && sandbox.emit({type: '#' + target.id + ':' + event.type, data: data});
 			for(var i in cls){
-				var type = '.' + cls[i] + ':' + event.type;
-				sandbox.emit({type: type, data: data});
+				ev.type = '.' + cls[i] + ':' + event.type;
+				sandbox.emit(new Object(ev));
 			}
+			ev.type = "#" + target.id + ":" + event.type;
+			sandbox.emit(new Object(ev));
+			ev.type = String(target.tagName).trim().toLowerCase() + ":" + event.type;
+			sandbox.emit(new Object(ev));
+		},
+		bubble: function(target, event){
+			if(String(target.className).indexOf("bubble-up") == -1)
+				return false;
+			if(target.parentNode[event.type])
+				target.parentNode[event.type]()
+			return true;
 		},
 		events: [
 			'load',
