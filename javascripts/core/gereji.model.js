@@ -28,7 +28,7 @@ gereji.extend("model", {
 		var path = key.replace(/\[(.*)\]/, '').split('.');
 		for(var i in path){
 			test += "." + path[i];
-			eval(test + " = " + test + " ? " + test + " : {}");
+			eval(test + " == " + test + " ? " + test + " : {}");
 		}
 		var index = (key.indexOf('[') == -1) ? false : key.match(/\[(.*)\]/)[1];
 		index || eval(test + ' = "' + value + '"');
@@ -49,9 +49,7 @@ gereji.extend("model", {
 	},
 	sync: function(){
 		var url = this.meta("about");
-		var name = this.meta("name");
 		var that = this;
-		this.broker.emit({type: "submit", data: this.store.data});
 		this.ajax.post(url, JSON.stringify(this.store.data), function(){
 			that.response = JSON.parse(arguments[0]);
 			that.broker.emit({type: "sync", data: that.response});

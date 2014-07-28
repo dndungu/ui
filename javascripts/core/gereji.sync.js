@@ -2,10 +2,13 @@
 gereji.extend('sync', {
 	init: function(){
 		this.headers = {};
-		this.headers["X-Powered-By"] = "Gereji";
-		this.headers["Content-Type"] = "application/json";
-		this.headers["Cache-Control"] = "no-cache";
+		this.headers["x-powered-by"] = "gereji";
+		this.headers["content-type"] = "application/json";
+		this.headers["cache-control"] = "no-cache";
+		this.broker = new gereji.broker();
+		this.broker.init();
 		this.options = {"async": true};
+		this.transport = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
 	},
 	header: function(key, value){
 		this.headers[key] = value;
@@ -18,6 +21,13 @@ gereji.extend('sync', {
 		return this.request({method: 'POST', uri: uri, data: payload, complete: then});
 	},
 	put: function(uri, payload, then){
+		var that = this;
+		var events = ["abort", "error", "load", "loadstart", "loadend", "progress"];
+		for(var i in events){
+			this.transport.upload.addEventListener(events[i], function(ev){
+				that.broker.emit({type: ev.type, data: ev});
+			}, false);
+		}
 		return this.request({method: 'PUT', uri: uri, data: payload, complete: then});
 	},
 	"delete": function(uri, then){
@@ -26,16 +36,16 @@ gereji.extend('sync', {
 	request: function(){
 		var args = arguments[0];
         try{
-			var transport = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-            transport.onreadystatechange = function(){
+            this.transport.onreadystatechange = function(){
 				var xhr = arguments[0].target;
 				xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 400 && args.complete(xhr.responseText);
 			};
-            transport.open(args.method, args.uri, this.options);
+            this.transport.open(args.method, args.uri, this.options);
 			for(var i in this.headers){
-				transport.setRequestHeader(i, this.headers[i]);
+				this.transport.setRequestHeader(i, this.headers[i]);
 			}
-            transport.send(args.data)
+            this.transport.send(args.data)
+			return this;
         }catch(e){
             console && console.log(e);
         }

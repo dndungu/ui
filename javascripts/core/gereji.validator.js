@@ -29,6 +29,9 @@ gereji.extend("validator", {
 			case "negativedouble":
 				return this.testNegativeDouble(input);
 				break;
+			case "percent":
+				return this.testPercent(input);
+				break;
 			case "phone":
 				return this.testPhone(input);
 				break;
@@ -101,6 +104,10 @@ gereji.extend("validator", {
     testNegativeDouble: function(){
         var pattern = /^-\d*\.{0,1}\d+$/;
         return pattern.test(arguments[0]);
+    },
+    testPercent: function(value){
+		var percent = value.match(/%/g);
+		return percent && this.testPositiveDouble(value.replace("%", ""));
     },
     testPhone: function(){
         var pattern = /^\+?[0-9\s]{8,16}/;

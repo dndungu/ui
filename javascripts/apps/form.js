@@ -7,30 +7,26 @@ gereji.apps.register('form', function(sandbox){
 			app.views = {};
 			sandbox.on([".add-item:click"], app.render);
 			sandbox.on(['input:change', 'textarea:change', 'select:change'], app.validate);
+			sandbox.on(['input:change'], app.putFile);
 			sandbox.on(['form:submit'], app.submit);
-			sandbox.on([".select-add:change"], app.selectAdd);
+			sandbox.on([".select-add:change"], app.toggleTag);
+			sandbox.on([".select-add:keyup"], app.revertTag);
 			return this;
 		},
         render: function(){
             var options = {};
 			var target = arguments[0].data.target;
-			options.sandbox = sandbox;
-			options._id = target.getAttribute("_id");
-			options.type = "form";
             options.about = target.getAttribute("about");
             options.name = target.getAttribute("name");
-            options.stage = target.getAttribute("stage");
             if(!options.about || !options.name)
                 return;
-            app.findOrCreate(options).render();
+			options.sandbox = sandbox;
+			options.type = "form";
+            options.stage = target.getAttribute("stage");
+			var view = new gereji.view.form();
+			view.init(options);
+			view.render();
         },
-		findOrCreate: function(options){
-			if(!options._id)
-				options._id = ((new gereji.storage()).uuid());
-			if(!app.views[options._id])
-                app.views[options._id] = (new gereji.view.form()).init(options);
-			return app.views[options._id];
-		},
 		createIdInput: function(form){
 			var _id = (new gereji.storage()).uuid();
 			var input = document.createElement("input");
@@ -51,23 +47,22 @@ gereji.apps.register('form', function(sandbox){
 		},
 		submit: function(){
 			var target = arguments[0].data.target;
+			var event = arguments[0].data.event;
 			var options = {};
-			options.type = "form";
 			options.about = target.getAttribute('about');
 			options.name = target.getAttribute("name");
 			if(!options.about || !options.name)
 				return this;
-			arguments[0].data.event.preventDefault();
-			options._id = app.findId(target);
-			if(!options._id)
-				options._id = app.createIdInput(target);
-			var model;
-			if(app.views[options._id])
-				model = app.views[options._id].getModel();
-			if(!model)
-				 model = (new gereji.model()).init().meta("about", options.about).meta("name", options.name);
+			options.type = "form";
+			options.about = options.about.replace(/\/$/, "");
+			event.preventDefault();
+			var model = new gereji.model();
+			model.init();
+			model.meta("about", options.about);
+			model.meta("name", options.name);
 			if(!app.parse(["input", "textarea", "select"], target, model))
 				return this;
+			model.broker.on(["sync"], console.log);
 			model.sync();
 			return this;
 		},
@@ -76,45 +71,136 @@ gereji.apps.register('form', function(sandbox){
 				var tagName = tags[i];
 				var elements = target.getElementsByTagName(tagName);
 				for(var i = 0; i < elements.length; i++){
+					var property = elements[i].getAttribute("property");
+					if(!property)
+						continue;
 					if(!app.validate({data: {target : elements[i]}}))
 						return false;
-					var property = elements[i].getAttribute("property");
-					property && model.set(property, elements[i].value);
+					model.set(property, elements[i].value);
 				}
 			}
 			return true;
 		},
 		validate: function(){
 			var target = arguments[0].data.target;
-			var tagName = target.tagName.toLowerCase();
-			var value = target.value;
+			var element = (new gereji.dom()).setElement(target);
+			element.removeClass('invalid-input');
 			var cls = target.className.split(' ');
-			(new gereji.dom()).setElement(target).removeClass('invalid-input');
-			var valid = true;
 			for(var i in cls){
-				var test = sandbox.validator.test(cls[i], value);
-				test || (new gereji.dom()).setElement(target).addClass(" invalid-input");
-				if(test)
+				if(sandbox.validator.test(cls[i], target.value))
 					continue;
-				target.value = "";
-				if(target.className.indexOf("required") != -1)
-					valid = false;
+				target.focus();
+				element.addClass(" invalid-input");
+				if(target.tagName.toLowerCase() != 'select')
+					target.value = "";
+				if(element.hasClass("required"))
+					return false;
 			}
-			return valid;
+			return true;
 		},
-		selectAdd: function(){
+		putFile: function(){
 			var target = arguments[0].data.target;
+			if(target.getAttribute("type") != "file")
+				return;
+			var about = target.getAttribute("about");
+			var mime = new gereji.mime();
+			for(var i = 0; i < target.files.length; i++){
+				var file = target.files.item(i);
+				var fd = new FormData();
+				fd.append(file.name, file);
+				var sync = new gereji.sync();
+				sync.init();
+				sync.broker.on(["loadstart"], function(){
+					app.putStart(target);
+				});
+				sync.broker.on(["progress"], function(){
+					app.putProgress(target, arguments[0].data);
+				});
+				sync.broker.on(["loadend"], function(){
+					app.putEnd(target, arguments[0].data);
+				});
+				sync.header("filename", file.name);
+				console.log(file.type);
+				sync.header("content-type", file.type);
+				sync.put(about, fd, function(){
+					console.log(arguments[0]);
+				});
+			}
+		},
+		putStart: function(target){
+			(new gereji.dom())
+			.setElement(target.parentNode.parentNode)
+			.findChildrenTag("label")
+			.findClass("placeholder")
+			.css({display: "none"});
+			var animation = (new gereji.dom())
+			.setElement(target.parentNode.parentNode)
+			.findChildrenTag("label")
+			.findClass("animation")
+			.css({display: "inline-block"});
+		},
+		putProgress: function(target, event){
+            var animation = (new gereji.dom()).setElement(target.parentNode.parentNode).findChildrenTag("label").findClass("animation");
+			var max = animation.getElements()[0].clientHeight;
+			var progress = event.position / event.totalSize;
+			var border = String(Math.ceil(progress * max)) + "px";
+            animation.css({"border-bottom-width": border});
+		},
+		putEnd: function(target, event){
+			var animation = (new gereji.dom()).setElement(target.parentNode.parentNode).findChildrenTag("label").findClass("animation");
+			var max = animation.getElements()[0].offsetHeight;
+			animation.css({"border-bottom-width": max + "px"});
+		},
+		toggleTag: function(){
+			var target = arguments[0].data.target;
+			if(target.tagName.toLowerCase() == "input"){
+				if(!app.validate({data: {target: target}}))
+					return
+				var element = (new gereji.dom()).setElement(target).findNextSibling();
+				var options = {};
+				options.about = element.attribute("about");
+				options.name = element.attribute("name");
+				var model = new gereji.model();
+				model.init();
+				model.meta("about", options.about);
+				model.meta("name", options.name);
+				model.sync();
+				var options = element.findChildrenTag("option").getElements();
+				var lastOption = options[(options.length - 1)];
+				var option = document.createElement("option");
+				option.innerHTML = target.value;
+				option.value = target.value;
+				lastOption.parentNode.insertBefore(option, lastOption);
+				lastOption.parentNode.value = target.value;
+				app.revertTag({data: {event: {keyCode: 27}, target: target}});
+				return;
+			}
 			if(target.value != "add-new")
 				return;
-			var input = document.createElement("input");
-			input.setAttribute("type", "text");
-			input.setAttribute("size", "32");
-			input.setAttribute("style", "width:100%;");
-			input.setAttribute("name", target.getAttribute("name"));
-			input.setAttribute("about", target.getAttribute("about"));
-			target.parentNode.insertBefore(input,target);
+			var element = document.createElement("input");
+			app.copyAttributes(element, target);
+			target.parentNode.insertBefore(element, target);
+			target.style.display = "none";
+			element.focus();
+		},
+		copyAttributes: function(element, target){
+			var style = "width: " + target.clientWidth + "px;";
+			element.setAttribute("style", style);
+			element.setAttribute("name", target.getAttribute("name"));
+			element.setAttribute("about", target.getAttribute("about"));
+			element.setAttribute("placeholder", target.getAttribute("placeholder"));
+			element.setAttribute("class", target.getAttribute("class"));
+			return this;
+		},
+		revertTag: function(){
+			var event = arguments[0].data.event;
+			var target = arguments[0].data.target;
+			if(target.tagName.toLowerCase() != "input" || event.keyCode != 27)
+				return this;
+			var element = (new gereji.dom()).setElement(target).findNextSibling();
+			element.css({"display": "inline-block"});
+			element.removeClass("invalid-input");
 			target.remove();
-			input.focus();
 		}
 	};
 });

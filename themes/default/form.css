@@ -152,7 +152,7 @@ textarea,
 	border-radius: 3px;
 }
 
-.image-uploader input[type="file"] {
+.upload-box input[type="file"] {
 	margin:0;
 	padding:0;
 	width:0;
@@ -160,22 +160,80 @@ textarea,
 	visibility:hidden;
 }
 
-.image-uploader .placeholder {
-	display: inline-block;
+.upload-box {
+	display:inline-block;
+	overflow:hidden;
 	width:96px;
 	height:96px;
-	color:#c8c8c8;
-	border:2px dashed #c8c8c8;
-	text-align:center;
-	line-height:96px;
 	margin:8px 16px 0 0;
 }
 
-.image-uploader .animation {
-	display: block;
-	width: 1px;
-	height: 10px;
+.upload-box .animation,
+.upload-box .placeholder {
+	display:inline-block;
+    width:96px;
+    height:96px;	
 	text-align: center;
-	padding: 0;
-	margin: 0;
+}
+
+.upload-box .placeholder {
+	color:#c8c8c8;
+	text-align:center;
+	margin:0 16px 0 0;
+	line-height:92px;
+	font-size:16px;
+	border:2px dashed #c8c8c8;
+}
+
+.upload-box .animation {
+	display:none;
+	border:0px solid #a4d57b;
+}
+
+.animation .pie-container, 
+.animation .pie-background, 
+.animation .pie-slice-one-a,
+.animation .pie-slice-one-b,
+.animation .pie-slice-pie {
+	position:absolute;
+	width:80px;
+	height:80px;
+    -moz-border-radius: 40px;
+    -webkit-border-radius: 40px;
+    -o-border-radius: 40px;
+    border-radius: 40px;
+}
+
+.animation .pie-container {
+	position:relative;
+}
+
+.animation .pie-background {
+	background-color:#fff;
+}
+
+.animation .pie-slice-one-a,
+.animation .pie-slice-one-b {
+	clip: rect(0px, 80px, 80px, 40px);
+}
+
+.animation .pie-slice-one-b {
+	margin-left:100%;
+	display:none;
+}
+
+.animation .pie-slice-pie {
+	clip: rect(0px, 40px, 80px, 0px);
+	background-color:#0774bb;
+	-webkit-transform:rotate(0deg);
+	-moz-transform:rotate(0deg);
+	-o-transform:rotate(0deg);
+	transform:rotate(0deg);
+}
+
+.animation .pie-slice-one-b .pie-slice-pie {
+    -webkit-transform:rotate(180deg);
+    -moz-transform:rotate(180deg);
+    -o-transform:rotate(180deg);
+    transform:rotate(180deg);	
 }

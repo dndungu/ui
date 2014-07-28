@@ -67,8 +67,7 @@ gereji.apps.register('list', function(sandbox){
 			options.type = "form";
 			var _id = target.getAttribute("_id");
 			var record = app.stage[stage_id].store.source.filter({_id : _id});
-			if(record.length)
-				options.data = {generic: {rest : [record]}};
+			options.data = {generic: {rest : [record]}};
 			var view = (new gereji.view.form()).init(options)
 			view.render();
 		},

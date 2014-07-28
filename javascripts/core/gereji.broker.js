@@ -2,6 +2,7 @@
 gereji.extend('broker', {
 	init: function(){
 		this.events = [];
+		return this;
 	},
 	on : function() {
 		var types = typeof arguments[0] == "string" ? [ arguments[0] ] : arguments[0];
@@ -11,6 +12,7 @@ gereji.extend('broker', {
 			this.events[type] = typeof this.events[type] == 'undefined' ? [] : this.events[type];
 			this.events[type].push(arguments[1]);
 		}
+		return this;
 	},
 	emit : function(_event) {
 		_event = typeof _event == "string" ? {type : _event, data : {}} : _event;
@@ -20,6 +22,7 @@ gereji.extend('broker', {
 			for(var i in listeners){
 				typeof listeners[i] === 'function' && listeners[i](_event);
 			}
+			return this;
 		}catch(e){
 			console && console.error(e.stack);
 		}

@@ -20,8 +20,15 @@ gereji.apps.register("product", function(sandbox){
 				return;
 			var value = target.value.trim().toLowerCase();
 			var label = value.charAt(0).toUpperCase() + value.slice(1);
-			var li = '<li class="grid2 half-space-top"><label><input class="product-category-item" name="tags" type="checkbox" value="' + value + '" checked="true"/> ' + label + '</label></ul>';
-			(new gereji.dom()).findTag("ul").findClass("product-category-list").append(li);
+			var position = (new gereji.dom()).findTag('input').findClass('product-category-item').getElements().length;
+			var li = [];
+			li.push('<li class="grid2 half-space-top">');
+			li.push('<label>');
+			li.push('<input class="product-category-item" name="tags" property="tags[' + position + ']" type="checkbox" value="' + value + '" checked="true"/>');
+			li.push('&#160;' + label);
+			li.push('</label>');
+			li.push('</li>');
+			(new gereji.dom()).findTag("ul").findClass("product-category-list").append(li.join(''));
 			target.value = "";
 			event.preventDefault();
 		},
